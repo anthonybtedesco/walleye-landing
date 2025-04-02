@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oneida Lake WalleyeFest Derby</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #004080;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        nav {
+            background-color: #002050;
+            padding: 0.5rem 0;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+        }
+        main {
+            padding: 2rem;
+        }
+        section {
+            margin-bottom: 2rem;
+        }
+        footer {
+            background-color: #004080;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .posts-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #004080 #f5f5f5;
+        }
+        .posts-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .posts-container::-webkit-scrollbar-track {
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .posts-container::-webkit-scrollbar-thumb {
+            background-color: #004080;
+            border-radius: 4px;
+        }
+        .post {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .post-title {
+            color: #004080;
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .post-date {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: auto;
+        }
+        @media (max-width: 768px) {
+            .posts-container {
+                grid-template-columns: 1fr;
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Oneida Lake WalleyeFest Derby</h1>
+        <p>Presented by Bob Johnson Chevrolet</p>
+    </header>
+    <nav>
+        <a href="#about">About Us</a>
+        <a href="#event-details">Event Details</a>
+        <a href="#leaderboards">Leaderboards</a>
+        <a href="#tickets">Tickets</a>
+        <a href="#contact">Contact</a>
+    </nav>
+    <main>
+        <section id="posts">
+            <h2>Latest Updates</h2>
+            <div class="posts-container" id="posts-container">
+                <!-- Posts will be dynamically inserted here -->
+            </div>
+        </section>
+        <section id="about">
+            <h2>About Us</h2>
+            <p>The Awakening Angler YouTube Channel and Limp Lizard BBQ have joined forces to form WalleyeFest, LLC, bringing the annual first weekend in May Walleye Derby back to Oneida Lake. WalleyeFest Derby is not just an event; it's a tradition reborn that brings together families, anglers, and the entire community to celebrate the arrival of spring in Central New York.</p>
+        </section>
+        <section id="event-details">
+            <h2>Event Details</h2>
+            <p><strong>When:</strong> May 3, 2025, 12:01 AM – May 4, 2025, 11:59 AM</p>
+            <p><strong>Where:</strong> Central Square, 60 US-11, Central Square, NY 13036, USA</p>
+            <p>The festivities kick off at 12:01 AM on Saturday, May 3rd, and continue non-stop for 36 hours, concluding on Sunday at 11:59 AM. The Derby Awards Ceremony for 2025 will take place May 4th from 11:00 AM - 6:00 PM at Brewerton Speedway.</p>
+            <ul>
+                <li>Free Fish Fry</li>
+                <li>Live entertainment at the Sunday awards ceremony (starting at 11 AM)</li>
+                <li>A 2-day Walleye Tournament open to any skill level (youth, women's, and veterans divisions)</li>
+                <li>$20,000 in Cash & Prizes guaranteed for the main leaderboard</li>
+                <li>12 optional sub-division leaderboards each with their own payout in CASH & PRIZES making this the LARGEST Derby In NYS</li>
+                <li>2 YOUTH DIVISION LEADERBOARDS</li>
+                <li>Vendors on site on Sunday</li>
+            </ul>
+        </section>
+        <section id="leaderboards">
+            <h2>Leaderboards</h2>
+            <p>Check out the latest standings on our leaderboards:</p>
+            <ul>
+                <li><a href="https://dash.oneidalakewalleyefestderby.com/2023-leader-boards" target="_blank">2023 Leader Boards</a></li>
+                <li><a href="https://dash.oneidalakewalleyefestderby.com/2024-leader-boards" target="_blank">2024 Leader Boards</a></li>
+            </ul>
+        </section>
+        <section id="tickets">
+            <h2>Tickets</h2>
+            <p>Ready to join the fun? Purchase your tickets now:</p>
+            <a href="https://dash.oneidalakewalleyefestderby.com/derby-tickets" target="_blank">Buy Tickets</a>
+        </section>
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <p>Have questions? Reach out to us:</p>
+            <p>Email: <a href="mailto:oneidalakewalleyefestderby@gmail.com">oneidalakewalleyefestderby@gmail.com</a></p>
+            <p>Address: Walleyefest LLC, ATTN: Matt Gutchess, 636 County Route 37, Central Square, NY 13036</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Oneida Lake WalleyeFest Derby</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
