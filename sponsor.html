@@ -93,12 +93,50 @@
             font-size: 0.8em;
         }
         .sponsor.TITLE {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            grid-column: span 2;
+        }
+        .sponsor.TITLE .sponsor-logo {
+            width: 200px;
+            height: 200px;
+        }
+        .sponsor.TITLE .sponsor-name {
+            font-size: 1.5em;
+        }
+        .sponsor.TITLE .sponsor-description {
+            font-size: 1.1em;
+        }
+        .sponsor.GOLD {
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
-        .sponsor.GOLD {
-            transform: scale(1.02);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+        .sponsor.GOLD .sponsor-logo {
+            width: 175px;
+            height: 175px;
+        }
+        .sponsor.GOLD .sponsor-name {
+            font-size: 1.3em;
+        }
+        .sponsor.GOLD .sponsor-description {
+            font-size: 1em;
+        }
+        .sponsor.SILVER .sponsor-logo {
+            width: 150px;
+            height: 150px;
+        }
+        .sponsor.SILVER .sponsor-name {
+            font-size: 1.2em;
+        }
+        .sponsor.BINGO .sponsor-logo {
+            width: 125px;
+            height: 125px;
+        }
+        .sponsor.BINGO .sponsor-name {
+            font-size: 1.1em;
+        }
+        .sponsor.BINGO .sponsor-description {
+            font-size: 0.9em;
         }
         @media (max-width: 768px) {
             .sponsors-container {
@@ -106,6 +144,13 @@
                 max-height: 100vh;
                 margin: 0;
                 padding: 10px;
+            }
+            .sponsor.TITLE {
+                grid-column: span 1;
+            }
+            .sponsor.TITLE .sponsor-logo {
+                width: 175px;
+                height: 175px;
             }
         }
     </style>
