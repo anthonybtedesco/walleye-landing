@@ -65,6 +65,106 @@ async function fetchSponsors() {
     }
 }
 
-// Fetch posts when the page loads
+async function fetchEvents() {
+    try {
+        const { data, error } = await supabase
+            .from('rankboard')
+            .select('*, media:logo_media_id(*), derby:derby_id(*), product:product_id(*)')
+            .order('created_at', { ascending: false })
+
+        if (error) throw error
+
+        console.log('Rankboards:', data)
+
+        const eventsContainer = document.getElementById('events-container')
+        eventsContainer.innerHTML = '' // Clear existing events
+
+        // Group rankboards by derby_id
+        const groupedByDerby = {};
+        
+        data.forEach(rankboard => {
+            const derbyId = rankboard.derby_id || 'no_derby';
+            if (!groupedByDerby[derbyId]) {
+                groupedByDerby[derbyId] = [];
+            }
+            groupedByDerby[derbyId].push(rankboard);
+        });
+        
+        // Process each derby group
+        Object.entries(groupedByDerby).forEach(([derbyId, rankboards]) => {
+            // Sort rankboards within each derby by metadata.number if it exists
+            rankboards.sort((a, b) => {
+                const numA = a.metadata?.number || 0;
+                const numB = b.metadata?.number || 0;
+                return numA - numB;
+            });
+            
+            // Create a derby section if it's a valid derby
+            if (derbyId !== 'no_derby') {
+                const derbyName = rankboards[0].derby?.name || 'Derby Event';
+                const derbySectionElement = document.createElement('div');
+                derbySectionElement.className = 'derby-section';
+                
+                // Create the title element
+                const titleElement = document.createElement('h2');
+                titleElement.className = 'derby-title';
+                titleElement.textContent = derbyName;
+                
+                // Create the content container
+                const contentElement = document.createElement('div');
+                contentElement.className = 'derby-content expanded';
+                
+                // Add click handler for collapsing/expanding
+                titleElement.addEventListener('click', () => {
+                    titleElement.classList.toggle('collapsed');
+                    contentElement.classList.toggle('collapsed');
+                    contentElement.classList.toggle('expanded');
+                });
+                
+                // Add rankboards to the content container
+                rankboards.forEach(rankboard => {
+                    if (!rankboard.metadata?.name) {
+                        return;
+                    }
+                    
+                    const eventElement = document.createElement('div')
+                    eventElement.className = 'event'
+                    
+                    // Get the image URL if media exists
+                    let imageUrl = ''
+                    if (rankboard.media) {
+                        const imageData = supabase.storage.from(rankboard.media.bucket).getPublicUrl(rankboard.media.file_path)
+                        imageUrl = imageData.data.publicUrl
+                    }
+
+                    // Add number to title if it exists
+                    const numberPrefix = rankboard.metadata.number ? `${rankboard.metadata.number}. ` : '';
+
+                    eventElement.innerHTML = `
+                        <h3 class="event-title">${numberPrefix}${rankboard.metadata.name || 'Rankboard Event'}</h3>
+                        ${imageUrl ? `<img src="${imageUrl}" alt="${rankboard.name || 'Event Image'}" class="event-image">` : ''}
+                        <p class="event-description">
+                            ${rankboard.product && rankboard.product.price_cents ? 
+                                `Price: $${(rankboard.product.price_cents / 100).toFixed(2)}` : 
+                                'Price not available'}
+                        </p>
+                    `
+                    contentElement.appendChild(eventElement)
+                });
+                
+                // Assemble the derby section
+                derbySectionElement.appendChild(titleElement);
+                derbySectionElement.appendChild(contentElement);
+                eventsContainer.appendChild(derbySectionElement);
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching events:', error.message)
+    }
+}
+
+
+// Fetch data when the page loads
 document.addEventListener('DOMContentLoaded', fetchPosts)
 document.addEventListener('DOMContentLoaded', fetchSponsors)
+document.addEventListener('DOMContentLoaded', fetchEvents)
