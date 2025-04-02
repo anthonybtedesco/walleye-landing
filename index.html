@@ -61,8 +61,81 @@
             font-size: 0.9em;
             margin-top: auto;
         }
+        .sponsors-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .sponsor {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .sponsor:hover {
+            transform: translateY(-5px);
+        }
+        .sponsor-logo {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        .sponsor-name {
+            color: #004080;
+            font-size: 1.2em;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+        .sponsor-description {
+            color: #666;
+            font-size: 0.9em;
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+        }
+        .sponsor-website {
+            color: #004080;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .sponsor-website:hover {
+            text-decoration: underline;
+        }
+        .sponsor-type {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .sponsor-type.BINGO {
+            background-color: #e6f3ff;
+            color: #004080;
+        }
+        .sponsor-type.PLATINUM {
+            background-color: #e6ffe6;
+            color: #006600;
+        }
+        .sponsor-type.GOLD {
+            background-color: #fff3e6;
+            color: #cc6600;
+        }
+        .sponsor-type.SILVER {
+            background-color: #f0f0f0;
+            color: #666666;
+        }
         @media (max-width: 768px) {
-            .posts-container {
+            .posts-container, .sponsors-container {
                 grid-template-columns: 1fr;
                 max-height: 100vh;
                 margin: 0;
@@ -74,6 +147,9 @@
 <body>
     <div class="posts-container" id="posts-container">
         <!-- Posts will be dynamically inserted here -->
+    </div>
+    <div class="sponsors-container" id="sponsors-container">
+        <!-- Sponsors will be dynamically inserted here -->
     </div>
     <script src="script.js"></script>
 </body>

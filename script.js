@@ -33,5 +33,38 @@ async function fetchPosts() {
     }
 }
 
+async function fetchSponsors() {
+    try {
+        const { data, error } = await supabase
+            .from('sponsor')
+            .select('*, media:logo_media_id(*)')
+            .order('sponsor_type', { ascending: true })
+
+        if (error) throw error
+
+        console.log('Sponsors:', data)
+
+        const sponsorsContainer = document.getElementById('sponsors-container')
+        sponsorsContainer.innerHTML = '' // Clear existing sponsors
+
+        data.forEach(sponsor => {
+            let sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
+            const sponsorElement = document.createElement('div')
+            sponsorElement.className = 'sponsor'
+            sponsorElement.innerHTML = `
+                <span class="sponsor-type ${sponsor.sponsor_type}">${sponsor.sponsor_type}</span>
+                <img src="${sponsorImage.data.publicUrl}" alt="${sponsor.name}" class="sponsor-logo">
+                <h3 class="sponsor-name">${sponsor.name}</h3>
+                <p class="sponsor-description">${sponsor.description}</p>
+                <a href="${sponsor.website}" target="_blank" class="sponsor-website">Visit Website</a>
+            `
+            sponsorsContainer.appendChild(sponsorElement)
+        })
+    } catch (error) {
+        console.error('Error fetching sponsors:', error.message)
+    }
+}
+
 // Fetch posts when the page loads
-document.addEventListener('DOMContentLoaded', fetchPosts) 
+document.addEventListener('DOMContentLoaded', fetchPosts)
+document.addEventListener('DOMContentLoaded', fetchSponsors)
