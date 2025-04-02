@@ -56,7 +56,7 @@ async function fetchSponsors() {
         orderedSponsors.forEach(sponsor => {
             let sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
             const sponsorElement = document.createElement('div')
-            sponsorElement.className = 'sponsor'
+            sponsorElement.className = `sponsor ${sponsor.sponsor_type}`
             sponsorElement.innerHTML = `
                 <span class="sponsor-type ${sponsor.sponsor_type}">${sponsor.sponsor_type}</span>
                 <img src="${sponsorImage.data.publicUrl}" alt="${sponsor.name}" class="sponsor-logo">
