@@ -167,6 +167,72 @@
                 padding: 15px;
             }
         }
+        .derby-section {
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .derby-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .derby-title:hover {
+            color: #004080;
+        }
+        .derby-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 10px;
+        }
+        .derby-content.collapsed {
+            display: none;
+        }
+        .event {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .event:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .event-content {
+            width: 100%;
+        }
+        .event-title {
+            color: #004080;
+            font-size: 1.3em;
+            margin: 0 0 15px 0;
+            font-weight: bold;
+        }
+        .event-description {
+            color: #666;
+            font-size: 1.1em;
+            margin: 0;
+            line-height: 1.4;
+        }
+        @media (max-width: 768px) {
+            .derby-section {
+                padding: 15px;
+            }
+            .derby-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
     </style>
 </head>
 <body>

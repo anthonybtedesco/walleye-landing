@@ -75,7 +75,7 @@ async function fetchEvents() {
     try {
         const { data, error } = await supabase
             .from('rankboard')
-            .select('*, media:logo_media_id(*), derby:derby_id(*), product:product_id(*)')
+            .select('*, media:logo_media_id(*), derby:derby_id(*, product:product_id(*)), product:product_id(*)')
             .order('created_at', { ascending: false })
 
         if (error) throw error
@@ -147,12 +147,14 @@ async function fetchEvents() {
                     const numberPrefix = rankboard.metadata.number ? `${rankboard.metadata.number}. ` : '';
 
                     eventElement.innerHTML = `
-                        <h3 class="event-title">${numberPrefix}${rankboard.metadata.name || 'Rankboard Event'}</h3>
-                        <p class="event-description">
-                            ${rankboard.product && rankboard.product.price_cents ? 
-                                `Price: $${(rankboard.product.price_cents / 100).toFixed(2)}` : 
-                                'Price not available'}
-                        </p>
+                        <div class="event-content">
+                            <h3 class="event-title">${numberPrefix}${rankboard.metadata.name || 'Rankboard Event'}</h3>
+                            <p class="event-description">
+                                ${rankboard.product && rankboard.product.price_cents ? 
+                                    `Price: $${(rankboard.product.price_cents / 100).toFixed(2)}` : 
+                                    `$${(rankboard.derby.product.price_cents / 100).toFixed(2)}`}
+                            </p>
+                        </div>
                     `
                     contentElement.appendChild(eventElement)
                 });

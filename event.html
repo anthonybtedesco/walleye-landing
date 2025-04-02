@@ -350,18 +350,34 @@
 
         @media (max-width: 767px) {
             .events-container {
-                grid-template-columns: 1fr;
+                flex: 1;
+                width: 100%;
+                margin: 0 auto;
+                grid-template-columns: 4fr;
                 padding: 1rem;
                 gap: 2rem;
             }
         }
+        .events-page {
+            background: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 2fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
     </style>
 </head>
-<body>
-    <nav class="navigation">
+<body class="events-page">
 
     <div class="events-container" id="events-container">
-        <!-- Events will be dynamically inserted here -->
+            <!-- Events will be dynamically inserted here -->
     </div>
     
     <script src="script.js"></script>
