@@ -142,7 +142,6 @@ async function fetchEvents() {
 
                     eventElement.innerHTML = `
                         <h3 class="event-title">${numberPrefix}${rankboard.metadata.name || 'Rankboard Event'}</h3>
-                        ${imageUrl ? `<img src="${imageUrl}" alt="${rankboard.name || 'Event Image'}" class="event-image">` : ''}
                         <p class="event-description">
                             ${rankboard.product && rankboard.product.price_cents ? 
                                 `Price: $${(rankboard.product.price_cents / 100).toFixed(2)}` : 

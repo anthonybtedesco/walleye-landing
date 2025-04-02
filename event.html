@@ -6,93 +6,360 @@
     <title>WalleyeFest Events</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --primary-color: #00f2ff;
+            --secondary-color: #0066cc;
+            --background-color: #0a0a1a;
+            --card-background: rgba(26, 26, 46, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3cc;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --card-border: 1px solid rgba(0, 242, 255, 0.2);
+            --glow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f5f5f5;
-        }
-        .events-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            max-height: 90vh;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #004080 #f5f5f5;
-        }
-        .events-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        .events-container::-webkit-scrollbar-track {
-            background: #f5f5f5;
-            border-radius: 4px;
-        }
-        .events-container::-webkit-scrollbar-thumb {
-            background-color: #004080;
-            border-radius: 4px;
-        }
-        .event {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: transform 0.2s;
+            background: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
-        .event:hover {
-            transform: translateY(-5px);
-        }
-        .event-image {
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin: 10px 0;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a1a 100%);
+            z-index: -1;
         }
-        .event-title {
-            color: #004080;
-            font-size: 1.2em;
-            margin: 0 0 10px 0;
-            font-weight: bold;
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white 1px, transparent 1px),
+                radial-gradient(white 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0.1;
+            z-index: -1;
         }
-        .event-description {
-            color: #666;
-            font-size: 0.9em;
-            margin: 0 0 15px 0;
-            line-height: 1.4;
+
+        .navigation {
+            background: rgba(26, 26, 46, 0.8);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
-        .event-website {
-            color: #004080;
+
+        .nav-links {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
             text-decoration: none;
-            font-size: 0.9em;
-            padding: 8px 16px;
-            border: 1px solid #004080;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
             border-radius: 4px;
-            transition: all 0.2s;
+            transition: var(--transition);
         }
-        .event-website:hover {
-            background-color: #004080;
+
+        .nav-link:hover {
+            background: var(--primary-color);
             color: white;
         }
-        @media (max-width: 768px) {
+
+        .page-header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 64, 128, 0.8), rgba(0, 102, 204, 0.8));
+            color: white;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></svg>') repeat;
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 1rem;
+        }
+
+        .events-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            perspective: 1000px;
+            align-items: start;
+        }
+
+        .event {
+            background: var(--card-background);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            border: var(--card-border);
+            transform-style: preserve-3d;
+            animation: cardFloat 6s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .event::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(0, 242, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+            z-index: 1;
+        }
+
+        .event:hover::before {
+            transform: translateX(100%);
+        }
+
+        @keyframes cardFloat {
+            0%, 100% {
+                transform: translateY(0) rotateX(0) rotateY(0);
+            }
+            25% {
+                transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
+            }
+            50% {
+                transform: translateY(0) rotateX(0) rotateY(0);
+            }
+            75% {
+                transform: translateY(-10px) rotateX(-2deg) rotateY(-2deg);
+            }
+        }
+
+        .event:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg);
+            box-shadow: var(--glow);
+            border-color: rgba(0, 242, 255, 0.4);
+        }
+
+        .event-image-container {
+            position: relative;
+            padding-top: 75%;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .event-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .event:hover .event-image {
+            transform: scale(1.1) rotate(1deg);
+            filter: brightness(1) contrast(1.2);
+        }
+
+        .event-content {
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(to bottom, var(--card-background), rgba(26, 26, 46, 0.95));
+            position: relative;
+            z-index: 2;
+            gap: 1.5rem;
+        }
+
+        .event-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .event-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin: 0 0 1.5rem 0;
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .event-date, .event-time, .event-location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 242, 255, 0.1);
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            transition: var(--transition);
+            width: fit-content;
+        }
+
+        .event-date:hover, .event-time:hover, .event-location:hover {
+            background: rgba(0, 242, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .event-website {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-website::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .event-website:hover::before {
+            left: 100%;
+        }
+
+        .event-website:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 242, 255, 0.3);
+        }
+
+        .event-category {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 242, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            z-index: 3;
+            transition: var(--transition);
+        }
+
+        .event-category:hover {
+            background: rgba(0, 242, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (min-width: 1200px) {
+            .events-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .events-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .events-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 767px) {
             .events-container {
                 grid-template-columns: 1fr;
-                max-height: 100vh;
-                margin: 0;
-                padding: 10px;
+                padding: 1rem;
+                gap: 2rem;
             }
         }
     </style>
 </head>
 <body>
+    <nav class="navigation">
+
     <div class="events-container" id="events-container">
         <!-- Events will be dynamically inserted here -->
     </div>
