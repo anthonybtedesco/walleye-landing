@@ -46,53 +46,26 @@ async function fetchSponsors() {
 
         const sponsorsContainer = document.getElementById('sponsors-container')
         sponsorsContainer.innerHTML = '' // Clear existing sponsors
+        
 
-        // Group sponsors by type
-        const sponsorsByType = {
-            'TITLE': [],
-            'GOLD': [],
-            'SILVER': [],
-            'BINGO': []
-        };
-
-        data.forEach(sponsor => {
-            if (sponsorsByType.hasOwnProperty(sponsor.sponsor_type)) {
-                sponsorsByType[sponsor.sponsor_type].push(sponsor);
-            }
+        let orderedSponsors = data.sort((a, b) => {
+            const typeOrder = { 'TITLE': 1, 'GOLD': 2, 'SILVER': 3, 'BINGO': 4 };
+            return typeOrder[a.sponsor_type] - typeOrder[b.sponsor_type];
         });
 
-        // Create sections for each type
-        Object.entries(sponsorsByType).forEach(([type, sponsors]) => {
-            if (sponsors.length > 0) {
-                const sectionElement = document.createElement('div');
-                sectionElement.className = 'sponsor-tier-section';
-                
-                const titleElement = document.createElement('h2');
-                titleElement.className = `tier-title ${type}`;
-                titleElement.textContent = `${type} Sponsors`;
-                
-                const contentElement = document.createElement('div');
-                contentElement.className = 'sponsor-tier-content';
-
-                sponsors.forEach(sponsor => {
-                    let sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
-                    const sponsorElement = document.createElement('div')
-                    sponsorElement.className = `sponsor ${sponsor.sponsor_type}`
-                    sponsorElement.innerHTML = `
-                        <span class="sponsor-type ${sponsor.sponsor_type}">${sponsor.sponsor_type}</span>
-                        <img src="${sponsorImage.data.publicUrl}" alt="${sponsor.name}" class="sponsor-logo">
-                        <h3 class="sponsor-name">${sponsor.name}</h3>
-                        <p class="sponsor-description">${sponsor.description}</p>
-                        <a href="${sponsor.website}" target="_blank" class="sponsor-website">Visit Website</a>
-                    `
-                    contentElement.appendChild(sponsorElement)
-                });
-
-                sectionElement.appendChild(titleElement);
-                sectionElement.appendChild(contentElement);
-                sponsorsContainer.appendChild(sectionElement);
-            }
-        });
+        orderedSponsors.forEach(sponsor => {
+            let sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
+            const sponsorElement = document.createElement('div')
+            sponsorElement.className = `sponsor ${sponsor.sponsor_type}`
+            sponsorElement.innerHTML = `
+                <span class="sponsor-type ${sponsor.sponsor_type}">${sponsor.sponsor_type}</span>
+                <img src="${sponsorImage.data.publicUrl}" alt="${sponsor.name}" class="sponsor-logo">
+                <h3 class="sponsor-name">${sponsor.name}</h3>
+                <p class="sponsor-description">${sponsor.description}</p>
+                <a href="${sponsor.website}" target="_blank" class="sponsor-website">Visit Website</a>
+            `
+            sponsorsContainer.appendChild(sponsorElement)
+        })
     } catch (error) {
         console.error('Error fetching sponsors:', error.message)
     }
