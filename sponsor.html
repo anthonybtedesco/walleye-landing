@@ -16,9 +16,41 @@
             max-width: 1400px;
             margin: 40px auto;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        .sponsor-tier-section {
+            width: 100%;
+        }
+        .tier-title {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .tier-title.TITLE {
+            color: #B8860B;
+            border-bottom: 3px solid #FFD700;
+        }
+        .tier-title.GOLD {
+            color: #B8860B;
+            border-bottom: 2px solid #FFD700;
+        }
+        .tier-title.SILVER {
+            color: #666;
+            border-bottom: 2px solid #C0C0C0;
+        }
+        .tier-title.BINGO {
+            color: #4682B4;
+            border-bottom: 2px solid #4682B4;
+        }
+        .sponsor-tier-content {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
+            padding: 20px;
         }
         .sponsor {
             background: white;
@@ -36,12 +68,7 @@
 
         /* TITLE Sponsor */
         .sponsor.TITLE {
-            grid-column: span 2;
-            padding: 35px;
-            background: linear-gradient(to bottom, #fff, #fffdf0);
-            border: 2px solid #FFD700;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            margin: 10px;
+            grid-column: span 1;
         }
         .sponsor.TITLE .sponsor-logo {
             width: 220px;
@@ -215,21 +242,16 @@
 
         @media (max-width: 768px) {
             .sponsors-container {
+                margin: 20px 10px;
+                gap: 30px;
+            }
+            .sponsor-tier-content {
                 grid-template-columns: 1fr;
-                gap: 20px;
-                margin: 10px;
                 padding: 10px;
             }
-            .sponsor.TITLE {
-                grid-column: span 1;
-                padding: 25px;
-            }
-            .sponsor.TITLE .sponsor-logo {
-                width: 180px;
-                height: 180px;
-            }
-            .sponsor.TITLE .sponsor-name {
+            .tier-title {
                 font-size: 1.5em;
+                margin-bottom: 15px;
             }
         }
     </style>
