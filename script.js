@@ -46,8 +46,14 @@ async function fetchSponsors() {
 
         const sponsorsContainer = document.getElementById('sponsors-container')
         sponsorsContainer.innerHTML = '' // Clear existing sponsors
+        
 
-        data.forEach(sponsor => {
+        let orderedSponsors = data.sort((a, b) => {
+            const typeOrder = { 'TITLE': 1, 'GOLD': 2, 'SILVER': 3 };
+            return typeOrder[a.sponsor_type] - typeOrder[b.sponsor_type];
+        }).filter(sponsor => sponsor.sponsor_type !== 'BINGO');
+
+        orderedSponsors.forEach(sponsor => {
             let sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
             const sponsorElement = document.createElement('div')
             sponsorElement.className = 'sponsor'
