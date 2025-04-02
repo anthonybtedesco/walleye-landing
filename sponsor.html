@@ -16,63 +16,24 @@
             max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 60px;
-        }
-        .sponsor-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 40px;
-            width: 100%;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
-        }
-        .sponsor-section-title {
-            font-size: 2em;
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-            width: 100%;
-            grid-column: 1 / -1;
-        }
-        .sponsor-section-title.TITLE {
-            color: #000000;
-            font-size: 2.5em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .sponsor-section-title.GOLD {
-            color: #cc6600;
-            font-size: 2.2em;
-        }
-        .sponsor-section-title.SILVER {
-            color: #666666;
-            font-size: 2em;
-        }
-        .sponsor-type.BINGO {
-            display: none;
-        }
-        .sponsor.BINGO {
-            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
         }
         .sponsor {
             background: white;
             border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: transform 0.2s;
             position: relative;
-            height: 100%;
         }
         .sponsor:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
         .sponsor-logo {
             width: 150px;
@@ -109,10 +70,13 @@
             font-size: 0.8em;
             font-weight: bold;
         }
-        .sponsor-type.TITLE {
-            background-color: #ffd700;
-            color: #000000;
-            font-size: 0.9em;
+        .sponsor-type.BINGO {
+            background-color: #e6f3ff;
+            color: #004080;
+        }
+        .sponsor-type.PLATINUM {
+            background-color: #e6ffe6;
+            color: #006600;
         }
         .sponsor-type.GOLD {
             background-color: #fff3e6;
@@ -122,135 +86,19 @@
             background-color: #f0f0f0;
             color: #666666;
         }
-        .sponsor.TITLE {
-            border: 2px solid #ffd700;
-            transform: scale(1.05);
-        }
-        .sponsor.GOLD {
-            border: 2px solid #cc6600;
-        }
-        .sponsor.SILVER {
-            border: 1px solid #666666;
-        }
-        .sponsor.TITLE .sponsor-logo {
-            width: 180px;
-            height: 180px;
-        }
-        .sponsor.GOLD .sponsor-logo {
-            width: 160px;
-            height: 160px;
-        }
-        .sponsor.SILVER .sponsor-logo {
-            width: 140px;
-            height: 140px;
-        }
-        .sponsor.TITLE .sponsor-name {
-            font-size: 1.4em;
-            color: #000000;
-        }
-        .sponsor.GOLD .sponsor-name {
-            font-size: 1.3em;
-            color: #cc6600;
-        }
-        .sponsor.SILVER .sponsor-name {
-            font-size: 1.2em;
-            color: #666666;
-        }
         @media (max-width: 768px) {
             .sponsors-container {
+                grid-template-columns: 1fr;
+                max-height: 100vh;
+                margin: 0;
                 padding: 10px;
-                gap: 40px;
-            }
-            .sponsor-section {
-                grid-template-columns: 1fr;
-                gap: 25px;
-                padding: 15px;
-            }
-        }
-        .derby-section {
-            margin-bottom: 40px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
-            padding: 20px;
-        }
-        .derby-title {
-            font-size: 2em;
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .derby-title:hover {
-            color: #004080;
-        }
-        .derby-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            padding: 10px;
-        }
-        .derby-content.collapsed {
-            display: none;
-        }
-        .event {
-            background: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-        .event:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-        .event-content {
-            width: 100%;
-        }
-        .event-title {
-            color: #004080;
-            font-size: 1.3em;
-            margin: 0 0 15px 0;
-            font-weight: bold;
-        }
-        .event-description {
-            color: #666;
-            font-size: 1.1em;
-            margin: 0;
-            line-height: 1.4;
-        }
-        @media (max-width: 768px) {
-            .derby-section {
-                padding: 15px;
-            }
-            .derby-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="sponsors-container" id="sponsors-container">
-        <div class="sponsor-section" id="title-sponsors">
-            <h2 class="sponsor-section-title TITLE">Title Sponsors</h2>
-            <!-- Title sponsors will be dynamically inserted here -->
-        </div>
-        
-        <div class="sponsor-section" id="gold-sponsors">
-            <h2 class="sponsor-section-title GOLD">Gold Sponsors</h2>
-            <!-- Gold sponsors will be dynamically inserted here -->
-        </div>
-        
-        <div class="sponsor-section" id="silver-sponsors">
-            <h2 class="sponsor-section-title SILVER">Silver Sponsors</h2>
-            <!-- Silver sponsors will be dynamically inserted here -->
-        </div>
+        <!-- Sponsors will be dynamically inserted here -->
     </div>
     
     <script src="script.js"></script>
