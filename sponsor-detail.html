@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .sponsor-detail {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .sponsor-logo {
+            width: 250px;
+            height: 250px;
+            object-fit: contain;
+            margin: 20px auto;
+            display: block;
+        }
+        .sponsor-name {
+            color: #333;
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        .sponsor-type {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .sponsor-type.TITLE {
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+            color: #000;
+        }
+        .sponsor-type.GOLD {
+            background: linear-gradient(135deg, #FFF0B3, #FFE066);
+            color: #B8860B;
+        }
+        .sponsor-type.SILVER {
+            background: linear-gradient(135deg, #E8E8E8, #D1D1D1);
+            color: #666666;
+        }
+        .sponsor-type.BINGO {
+            background: linear-gradient(135deg, #F0F8FF, #E1EBFF);
+            color: #4682B4;
+        }
+        .sponsor-description {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sponsor-website {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        .sponsor.TITLE .sponsor-website {
+            background: #FFD700;
+            color: #000;
+        }
+        .sponsor.GOLD .sponsor-website {
+            background: #FFF0B3;
+            color: #B8860B;
+        }
+        .sponsor.SILVER .sponsor-website {
+            background: #E8E8E8;
+            color: #666666;
+        }
+        .sponsor.BINGO .sponsor-website {
+            background: #F0F8FF;
+            color: #4682B4;
+        }
+        .sponsor-website:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #004080;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 30px;
+            transition: background-color 0.2s ease;
+        }
+        .back-button:hover {
+            background: #003366;
+        }
+        @media (max-width: 768px) {
+            .sponsor-detail {
+                margin: 0;
+                border-radius: 0;
+                padding: 20px;
+            }
+            .sponsor-logo {
+                width: 200px;
+                height: 200px;
+            }
+            .sponsor-name {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sponsor-detail" id="sponsor-detail">
+        <!-- Sponsor details will be dynamically inserted here -->
+    </div>
+    
+    <script>
+        // Get sponsor ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sponsorId = urlParams.get('id');
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function fetchSponsorDetails() {
+            try {
+                const { data, error } = await supabase
+                    .from('sponsor')
+                    .select('*, media:logo_media_id(*)')
+                    .eq('id', sponsorId)
+                    .single()
+
+                if (error) throw error
+
+                const sponsorDetail = document.getElementById('sponsor-detail')
+                let sponsorImage = ''
+                if (data.media) {
+                    sponsorImage = supabase.storage.from(data.media.bucket).getPublicUrl(data.media.file_path)
+                }
+
+                sponsorDetail.innerHTML = `
+                    <div class="sponsor ${data.sponsor_type}">
+                        ${sponsorImage ? `<img src="${sponsorImage.data.publicUrl}" alt="${data.name}" class="sponsor-logo">` : ''}
+                        <h1 class="sponsor-name">${data.name}</h1>
+                        <div class="sponsor-type ${data.sponsor_type}">${data.sponsor_type}</div>
+                        <p class="sponsor-description">${data.description || 'No description provided'}</p>
+                        ${data.website ? `<a href="${data.website}" target="_blank" class="sponsor-website">Visit Website</a>` : ''}
+                        <div>
+                            <a href="sponsor.html" class="back-button">Back to Sponsors</a>
+                        </div>
+                    </div>
+                `
+            } catch (error) {
+                console.error('Error fetching sponsor details:', error.message)
+                document.getElementById('sponsor-detail').innerHTML = `
+                    <h1>Error</h1>
+                    <p>Could not load sponsor details. Please try again later.</p>
+                    <a href="sponsor.html" class="back-button">Back to Sponsors</a>
+                `
+            }
+        }
+
+        // Fetch sponsor details when the page loads
+        document.addEventListener('DOMContentLoaded', fetchSponsorDetails)
+    </script>
+</body>
+</html> 

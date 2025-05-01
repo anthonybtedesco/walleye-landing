@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .post-detail {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .post-title {
+            color: #004080;
+            font-size: 1.8em;
+            margin: 0;
+        }
+        .post-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .post-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .post-description {
+            color: #333;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        .post-author {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #004080;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+        .back-button:hover {
+            background: #003366;
+        }
+        @media (max-width: 768px) {
+            .post-detail {
+                margin: 0;
+                border-radius: 0;
+                padding: 20px;
+            }
+            .post-image {
+                max-height: 400px;
+            }
+            .post-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="post-detail" id="post-detail">
+        <!-- Post details will be dynamically inserted here -->
+    </div>
+    
+    <script>
+        // Get post ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function fetchPostDetails() {
+            try {
+                const { data, error } = await supabase
+                    .from('post')
+                    .select('*, profile:profile_id(*), media:media_id(*)')
+                    .eq('id', postId)
+                    .single()
+
+                if (error) throw error
+
+                const postDetail = document.getElementById('post-detail')
+                let postImage = ''
+                if (data.media) {
+                    postImage = supabase.storage.from(data.media.bucket).getPublicUrl(data.media.file_path)
+                }
+
+                postDetail.innerHTML = `
+                    <div class="post-header">
+                        <h1 class="post-title">${data.profile.username || 'Anonymous'}</h1>
+                        <div class="post-date">${new Date(data.created_at).toLocaleDateString()}</div>
+                    </div>
+                    ${postImage ? `<img src="${postImage.data.publicUrl}" alt="Post Image" class="post-image">` : ''}
+                    <p class="post-description">${data.description || 'No description provided'}</p>
+                    <div class="post-author">
+                        Posted by: ${data.profile.username || 'Anonymous'}
+                    </div>
+                    <a href="post.html" class="back-button">Back to Posts</a>
+                `
+            } catch (error) {
+                console.error('Error fetching post details:', error.message)
+                document.getElementById('post-detail').innerHTML = `
+                    <h1>Error</h1>
+                    <p>Could not load post details. Please try again later.</p>
+                    <a href="post.html" class="back-button">Back to Posts</a>
+                `
+            }
+        }
+
+        // Fetch post details when the page loads
+        document.addEventListener('DOMContentLoaded', fetchPostDetails)
+    </script>
+</body>
+</html> 

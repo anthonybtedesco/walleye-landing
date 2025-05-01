@@ -18,12 +18,17 @@ async function fetchPosts() {
         postsContainer.innerHTML = '' // Clear existing posts
 
         data.forEach(post => {
-            let postImage = supabase.storage.from(post.media.bucket).getPublicUrl(post.media.file_path)
-            const postElement = document.createElement('div')
+            let postImage = ''
+            if (post.media) {
+                postImage = supabase.storage.from(post.media.bucket).getPublicUrl(post.media.file_path)
+            }
+
+            const postElement = document.createElement('a')
             postElement.className = 'post'
+            postElement.href = `post-detail.html?id=${post.id}`
             postElement.innerHTML = `
-                <h3 class="post-title">${post.profile.username}</h3>
-                <img src="${postImage.data.publicUrl}" alt="Post Image" class="post-image">
+                <h3 class="post-title">${post.profile.username || 'Anonymous'}</h3>
+                ${postImage ? `<img src="${postImage.data.publicUrl}" alt="Post Image" class="post-image">` : ''}
                 <div class="post-date">${new Date(post.created_at).toLocaleDateString()}</div>
             `
             postsContainer.appendChild(postElement)
@@ -54,15 +59,20 @@ async function fetchSponsors() {
         });
 
         orderedSponsors.forEach(sponsor => {
-            let sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
-            const sponsorElement = document.createElement('div')
+            let sponsorImage = ''
+            if (sponsor.media) {
+                sponsorImage = supabase.storage.from(sponsor.media.bucket).getPublicUrl(sponsor.media.file_path)
+            }
+
+            const sponsorElement = document.createElement('a')
             sponsorElement.className = `sponsor ${sponsor.sponsor_type}`
+            sponsorElement.href = `sponsor-detail.html?id=${sponsor.id}`
             sponsorElement.innerHTML = `
                 <span class="sponsor-type ${sponsor.sponsor_type}">${sponsor.sponsor_type}</span>
-                <img src="${sponsorImage.data.publicUrl}" alt="${sponsor.name}" class="sponsor-logo">
+                ${sponsorImage ? `<img src="${sponsorImage.data.publicUrl}" alt="${sponsor.name}" class="sponsor-logo">` : ''}
                 <h3 class="sponsor-name">${sponsor.name}</h3>
                 <p class="sponsor-description">${sponsor.description}</p>
-                <a href="${sponsor.website}" target="_blank" class="sponsor-website">Visit Website</a>
+                ${sponsor.website ? `<a href="${sponsor.website}" target="_blank" class="sponsor-website">Visit Website</a>` : ''}
             `
             sponsorsContainer.appendChild(sponsorElement)
         })
@@ -170,8 +180,49 @@ async function fetchEvents() {
     }
 }
 
+async function fetchSubmissions() {
+    try {
+        console.log('Fetching submissions...')
+        const { data, error } = await supabase
+            .from('submission')
+            .select('*, profile:profile_id(*), media:media_id(*)')
+            .order('created_at', { ascending: false })
+
+        if (error) throw error
+
+        const submissionsContainer = document.getElementById('submissions-container')
+        submissionsContainer.innerHTML = '' // Clear existing submissions
+
+        data.forEach(submission => {
+            let submissionImage = ''
+            if (submission.media) {
+                submissionImage = supabase.storage.from(submission.media.bucket).getPublicUrl(submission.media.file_path)
+            }
+
+            const submissionElement = document.createElement('a')
+            submissionElement.className = 'submission'
+            submissionElement.href = `submission-detail.html?id=${submission.id}`
+            submissionElement.innerHTML = `
+                <div class="submission-details">
+                    <h3 class="fish-type">${submission.fish_type}</h3>
+                    <p class="fish-length">Length: ${submission.fish_length} inches</p>
+                    <p class="submission-note">${submission.note || 'No notes provided'}</p>
+                    <p class="location-info">Location: ${submission.latitude.toFixed(4)}, ${submission.longitude.toFixed(4)}</p>
+                </div>
+                ${submissionImage ? `<img src="${submissionImage.data.publicUrl}" alt="Submission Image" class="submission-image">` : ''}
+                <div class="submission-date">${new Date(submission.created_at).toLocaleDateString()}</div>
+            `
+            submissionsContainer.appendChild(submissionElement)
+        })
+    } catch (error) {
+        console.error('Error fetching submissions:', error.message)
+    }
+}
 
 // Fetch data when the page loads
-document.addEventListener('DOMContentLoaded', fetchPosts)
-document.addEventListener('DOMContentLoaded', fetchSponsors)
-document.addEventListener('DOMContentLoaded', fetchEvents)
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPosts()
+    fetchSponsors()
+    fetchEvents()
+    fetchSubmissions()
+})
