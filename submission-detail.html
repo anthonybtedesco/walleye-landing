@@ -37,12 +37,42 @@
             font-size: 1.2em;
             margin: 10px 0;
         }
-        .submission-image {
-            width: 100%;
-            max-height: 500px;
-            object-fit: cover;
-            border-radius: 8px;
+        .media-container {
+            display: flex;
+            gap: 0;
             margin: 20px 0;
+            flex-wrap: nowrap;
+            width: 100%;
+        }
+        .media-item {
+            flex: 1;
+            height: 350px;
+            position: relative;
+        }
+        .media-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            aspect-ratio: 2/3;
+        }
+        .media-video {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            object-fit: cover;
+        }
+        .media-label {
+            text-align: center;
+            color: #666;
+            font-size: 0.8em;
+            margin-top: 5px;
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.7);
+            padding: 3px 0;
         }
         .submission-note {
             color: #333;
@@ -59,6 +89,11 @@
             color: #666;
             font-size: 0.9em;
         }
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
         .back-button {
             display: inline-block;
             padding: 10px 20px;
@@ -66,19 +101,40 @@
             color: white;
             text-decoration: none;
             border-radius: 4px;
-            margin-top: 20px;
             transition: background-color 0.2s ease;
         }
         .back-button:hover {
             background: #003366;
         }
+        .presentation-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #008080;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+        .presentation-button:hover {
+            background: #006666;
+        }
         @media (max-width: 768px) {
             .submission-detail {
                 margin: 0;
                 border-radius: 0;
+                padding: 10px;
             }
-            .submission-image {
-                max-height: 300px;
+            .media-container {
+                flex-direction: column;
+                height: auto;
+            }
+            .media-item {
+                width: 100%;
+                height: 450px;
+                margin-bottom: 15px;
+            }
+            .button-container {
+                flex-direction: column;
             }
         }
     </style>
@@ -102,17 +158,18 @@
             try {
                 const { data, error } = await supabase
                     .from('submission')
-                    .select('*, profile:profile_id(*), media:media_id(*)')
+                    .select('*, profile:profile_id(*), media:media_id(*), hero_media:hero_media_id(*), video_media:video_media_id(*)')
                     .eq('id', submissionId)
                     .single()
 
                 if (error) throw error
 
                 const submissionDetail = document.getElementById('submission-detail')
-                let submissionImage = ''
-                if (data.media) {
-                    submissionImage = supabase.storage.from(data.media.bucket).getPublicUrl(data.media.file_path)
-                }
+                
+                // Process media items
+                let mainImage = data.media ? supabase.storage.from(data.media.bucket).getPublicUrl(data.media.file_path) : null;
+                let heroImage = data.hero_media ? supabase.storage.from(data.hero_media.bucket).getPublicUrl(data.hero_media.file_path) : null;
+                let videoMedia = data.video_media ? supabase.storage.from(data.video_media.bucket).getPublicUrl(data.video_media.file_path) : null;
 
                 submissionDetail.innerHTML = `
                     <div class="submission-header">
@@ -120,10 +177,36 @@
                         <div class="submission-date">${new Date(data.created_at).toLocaleDateString()}</div>
                     </div>
                     <p class="fish-length">Length: ${data.fish_length} inches</p>
-                    ${submissionImage ? `<img src="${submissionImage.data.publicUrl}" alt="Submission Image" class="submission-image">` : ''}
+                    
+                    <div class="media-container">
+                        ${mainImage ? `
+                            <div class="media-item">
+                                <img src="${mainImage.data.publicUrl}" alt="Fish Image" class="media-image">
+                                <div class="media-label">Main Image</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${heroImage ? `
+                            <div class="media-item">
+                                <img src="${heroImage.data.publicUrl}" alt="Hero Image" class="media-image">
+                                <div class="media-label">Hero Image</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${videoMedia ? `
+                            <div class="media-item">
+                                <video src="${videoMedia.data.publicUrl}" controls class="media-video"></video>
+                                <div class="media-label">Video</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
                     <p class="submission-note">${data.note || 'No notes provided'}</p>
                     <p class="location-info">Location: ${data.latitude.toFixed(4)}, ${data.longitude.toFixed(4)}</p>
-                    <a href="submission.html" class="back-button">Back to Submissions</a>
+                    <div class="button-container">
+                        <a href="submission.html" class="back-button">Back to Submissions</a>
+                        <a href="submission-presentation.html?id=${data.id}" class="presentation-button">View Presentation</a>
+                    </div>
                 `
             } catch (error) {
                 console.error('Error fetching submission details:', error.message)

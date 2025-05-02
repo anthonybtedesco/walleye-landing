@@ -43,14 +43,12 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             text-decoration: none;
             color: inherit;
+            position: relative;
         }
         .submission:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         .submission-image {
             width: 100%;
@@ -77,6 +75,11 @@
             color: #333;
             font-size: 0.9em;
             margin: 10px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .submission-date {
             color: #666;
@@ -87,6 +90,35 @@
             color: #666;
             font-size: 0.8em;
             margin-top: 5px;
+        }
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .details-button, .presentation-button {
+            flex: 1;
+            padding: 8px 0;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .details-button {
+            background: #004080;
+            color: white;
+        }
+        .details-button:hover {
+            background: #00366D;
+        }
+        .presentation-button {
+            background: #008080;
+            color: white;
+        }
+        .presentation-button:hover {
+            background: #006666;
         }
         @media (max-width: 768px) {
             .submissions-container {
@@ -103,6 +135,56 @@
         <!-- Submissions will be dynamically inserted here -->
     </div>
     
-    <script src="script.js"></script>
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function fetchSubmissions() {
+            try {
+                console.log('Fetching submissions...')
+                const { data, error } = await supabase
+                    .from('submission')
+                    .select('*, profile:profile_id(*), media:media_id(*)')
+                    .order('created_at', { ascending: false })
+
+                if (error) throw error
+
+                const submissionsContainer = document.getElementById('submissions-container')
+                submissionsContainer.innerHTML = '' // Clear existing submissions
+
+                data.forEach(submission => {
+                    let submissionImage = ''
+                    if (submission.media) {
+                        submissionImage = supabase.storage.from(submission.media.bucket).getPublicUrl(submission.media.file_path)
+                    }
+
+                    const submissionElement = document.createElement('div')
+                    submissionElement.className = 'submission'
+                    submissionElement.innerHTML = `
+                        <div class="submission-details">
+                            <h3 class="fish-type">${submission.fish_type}</h3>
+                            <p class="fish-length">Length: ${submission.fish_length} inches</p>
+                            <p class="submission-note">${submission.note || 'No notes provided'}</p>
+                            <p class="location-info">Location: ${submission.latitude.toFixed(4)}, ${submission.longitude.toFixed(4)}</p>
+                        </div>
+                        ${submissionImage ? `<img src="${submissionImage.data.publicUrl}" alt="Submission Image" class="submission-image">` : ''}
+                        <div class="submission-date">${new Date(submission.created_at).toLocaleDateString()}</div>
+                        <div class="card-buttons">
+                            <a href="submission-detail.html?id=${submission.id}" class="details-button">View Details</a>
+                            <a href="submission-presentation.html?id=${submission.id}" class="presentation-button">Presentation</a>
+                        </div>
+                    `
+                    submissionsContainer.appendChild(submissionElement)
+                })
+            } catch (error) {
+                console.error('Error fetching submissions:', error.message)
+            }
+        }
+
+        // Fetch submissions when the page loads
+        document.addEventListener('DOMContentLoaded', fetchSubmissions)
+    </script>
 </body>
 </html>

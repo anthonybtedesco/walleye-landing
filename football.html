@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Stars - Join Your Dream Team!</title>
+    <style>
+        :root {
+            --primary-color: #2E3192;
+            --secondary-color: #00FF87;
+            --accent-color: #FF3366;
+            --dark-bg: #1A1B2F;
+            --card-bg: #2A2B4F;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: linear-gradient(45deg, var(--dark-bg) 0%, #2E3192 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            color: var(--secondary-color);
+            text-shadow: 0 0 10px rgba(0, 255, 135, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        /* Player Card Styles */
+        .player-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 300px;
+            margin: 2rem auto;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .player-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1));
+            pointer-events: none;
+        }
+
+        .player-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            border: 4px solid var(--secondary-color);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(0, 255, 135, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Find Team Button */
+        .find-team-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 2rem auto;
+            display: block;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .find-team-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .leaderboard h2 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .leaderboard-item:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>⚽ Football Stars ⚽</h1>
+            <p>Join a team and become a legend!</p>
+        </header>
+
+        <div class="player-card">
+            <div class="player-image">
+                <!-- Placeholder for player image -->
+                <span style="font-size: 48px">👤</span>
+            </div>
+            <h2 style="text-align: center; margin-bottom: 1rem;">Player Name</h2>
+            <div class="player-stats">
+                <div class="stat">
+                    <h3>Speed</h3>
+                    <p>85</p>
+                </div>
+                <div class="stat">
+                    <h3>Power</h3>
+                    <p>78</p>
+                </div>
+                <div class="stat">
+                    <h3>Skill</h3>
+                    <p>92</p>
+                </div>
+                <div class="stat">
+                    <h3>Team</h3>
+                    <p>None</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="find-team-btn">🎮 Find a Team!</button>
+
+        <div class="leaderboard">
+            <h2>🏆 Top Teams</h2>
+            <ul class="leaderboard-list">
+                <li class="leaderboard-item">
+                    <span>1. Thunder Dragons</span>
+                    <span>Points: 2500</span>
+                </li>
+                <li class="leaderboard-item">
+                    <span>2. Lightning Strikers</span>
+                    <span>Points: 2350</span>
+                </li>
+                <li class="leaderboard-item">
+                    <span>3. Phoenix Warriors</span>
+                    <span>Points: 2200</span>
+                </li>
+                <li class="leaderboard-item">
+                    <span>4. Royal Knights</span>
+                    <span>Points: 2100</span>
+                </li>
+                <li class="leaderboard-item">
+                    <span>5. Star Blazers</span>
+                    <span>Points: 2050</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

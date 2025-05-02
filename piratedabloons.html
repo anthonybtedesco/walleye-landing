@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate Dabloons Fishing Tournament</title>
+    <style>
+        :root {
+            --primary-color: #1a2639;
+            --secondary-color: #d4af37;
+            --accent-color: #c17f59;
+            --text-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                        url('https://images.unsplash.com/photo-1534294228306-bd54eb9a7ba8?q=80&w=1740') center/cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: var(--secondary-color);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .feature-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="hero-title">Pirate Dabloons</h1>
+        <p class="hero-subtitle">The Most Exciting Fishing Tournament on the Seven Seas!</p>
+        <a href="#register" class="cta-button">Join the Adventure</a>
+    </header>
+
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About the Tournament</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>Earn Dabloons</h3>
+                    <p>Catch fish to earn valuable pirate dabloons! The bigger the fish, the more dabloons you'll receive.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Compete</h3>
+                    <p>Battle against fellow anglers to climb the leaderboard and become the ultimate fishing pirate!</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Win Prizes</h3>
+                    <p>Exchange your hard-earned dabloons for amazing prizes and exclusive fishing gear!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rules">
+        <div class="container">
+            <h2 class="section-title">Tournament Rules</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>Eligible Species</h3>
+                    <p>All freshwater game fish are eligible for the tournament. Special bounties for rare catches!</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Scoring System</h3>
+                    <p>Earn 1 dabloon per inch of fish length, with bonus multipliers for trophy catches!</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Fair Play</h3>
+                    <p>Catch and release encouraged. All local fishing regulations must be followed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Pirate Dabloons Fishing Tournament. All rights reserved.</p>
+    </footer>
+</body>
+</html>

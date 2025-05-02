@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Presentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .presentation-container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .presentation-slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #001428, #003366);
+        }
+        .presentation-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+        .fish-type {
+            color: #ffffff;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 0 1rem 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .fish-length {
+            color: #64B5F6;
+            font-size: 2rem;
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+        .media-container {
+            display: flex;
+            gap: 0;
+            margin: 2rem 0;
+            justify-content: center;
+            width: 100%;
+            height: 60vh;
+        }
+        .media-item {
+            flex: 1;
+            max-width: 33.333%;
+            position: relative;
+            height: 100%;
+        }
+        .media-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            aspect-ratio: 2/3;
+        }
+        .media-video {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            object-fit: cover;
+        }
+        .media-label {
+            color: #B3E5FC;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            background: rgba(0,20,40,0.7);
+            padding: 5px 0;
+        }
+        .submission-note {
+            color: #E1F5FE;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            max-width: 80%;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+            backdrop-filter: blur(5px);
+        }
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .error-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .fish-type {
+                font-size: 2rem;
+            }
+            .fish-length {
+                font-size: 1.5rem;
+            }
+            .media-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 0;
+                height: auto;
+            }
+            .media-item {
+                max-width: 100%;
+                height: 450px;
+                margin-bottom: 0;
+            }
+            .submission-note {
+                font-size: 1.2rem;
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container" id="presentation-container">
+        <!-- Presentation will be dynamically inserted here -->
+    </div>
+    
+    <script>
+        // Get submission ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const submissionId = urlParams.get('id');
+
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function fetchSubmissionPresentation() {
+            try {
+                const { data, error } = await supabase
+                    .from('submission')
+                    .select('*, profile:profile_id(*), media:media_id(*), hero_media:hero_media_id(*), video_media:video_media_id(*)')
+                    .eq('id', submissionId)
+                    .single()
+
+                if (error) throw error
+
+                const presentationContainer = document.getElementById('presentation-container')
+                
+                // Process media items
+                let mainImage = data.media ? supabase.storage.from(data.media.bucket).getPublicUrl(data.media.file_path) : null;
+                let heroImage = data.hero_media ? supabase.storage.from(data.hero_media.bucket).getPublicUrl(data.hero_media.file_path) : null;
+                let videoMedia = data.video_media ? supabase.storage.from(data.video_media.bucket).getPublicUrl(data.video_media.file_path) : null;
+
+                presentationContainer.innerHTML = `
+                    <div class="controls">
+                        <a href="submission-detail.html?id=${data.id}" class="back-button">Exit Presentation</a>
+                    </div>
+                    <div class="presentation-slide">
+                        <div class="presentation-header">
+                            <h1 class="fish-type">${data.fish_type}</h1>
+                            <p class="fish-length">${data.fish_length} inches</p>
+                        </div>
+                        
+                        <div class="media-container">
+                            ${mainImage ? `
+                                <div class="media-item">
+                                    <img src="${mainImage.data.publicUrl}" alt="Fish Image" class="media-image">
+                                    <div class="media-label">Main Image</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${heroImage ? `
+                                <div class="media-item">
+                                    <img src="${heroImage.data.publicUrl}" alt="Hero Image" class="media-image">
+                                    <div class="media-label">Hero Image</div>
+                                </div>
+                            ` : ''}
+                            
+                            ${videoMedia ? `
+                                <div class="media-item">
+                                    <video src="${videoMedia.data.publicUrl}" controls class="media-video"></video>
+                                    <div class="media-label">Video</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <p class="submission-note">${data.note || 'No notes provided'}</p>
+                    </div>
+                `
+            } catch (error) {
+                console.error('Error fetching submission for presentation:', error.message)
+                document.getElementById('presentation-container').innerHTML = `
+                    <div class="error-slide">
+                        <h1>Error</h1>
+                        <p>Could not load submission for presentation. Please try again later.</p>
+                        <a href="submission-detail.html?id=${submissionId}" class="back-button">Back to Details</a>
+                    </div>
+                `
+            }
+        }
+
+        // Fetch submission details when the page loads
+        document.addEventListener('DOMContentLoaded', fetchSubmissionPresentation)
+    </script>
+</body>
+</html>
