@@ -6,23 +6,41 @@
     <title>WalleyeFest - Leaderboard Details</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --wf-purple: #5D3FD3;
+            --wf-yellow: #FFD700;
+            --wf-blue: #0070c0;
+            --wf-black: #222;
+            --wf-red: #D22B2B;
+            
+            /* Simplified color scheme */
+            --primary: var(--wf-blue);
+            --secondary: var(--wf-purple);
+            --accent: var(--wf-yellow);
+            --accent-red: var(--wf-red);
+            --dark: var(--wf-black);
+            --light: #ffffff;
+        }
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--primary));
             color: #333;
-            background-image: linear-gradient(to bottom, #e6f0fa, #f5f5f5);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            overflow-y: auto;
         }
         
         .navigation {
-            background: #004080;
+            background: var(--primary);
             padding: 15px 0;
             margin-bottom: 20px;
             display: flex;
@@ -45,14 +63,28 @@
         .back-link {
             display: inline-flex;
             align-items: center;
-            color: #004080;
+            background: var(--primary);
+            color: white;
             text-decoration: none;
-            margin-bottom: 20px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        
+        .back-link:before {
+            content: "←";
+            margin-right: 6px;
             font-weight: bold;
         }
         
         .back-link:hover {
-            text-decoration: underline;
+            background: #0062a3;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
         }
         
         .back-link::before {
@@ -64,17 +96,19 @@
         /* Trophy and fish icons */
         .trophy-icon {
             display: inline-block;
-            margin-right: 5px;
-            color: gold;
-            font-size: 1.1em;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            margin-right: 8px;
+            color: var(--accent);
         }
         
         .fish-icon {
             display: inline-block;
             margin-right: 5px;
-            color: #0070c0;
-            font-size: 1.1em;
+            color: var(--accent);
+        }
+        
+        .medal-icon {
+            display: inline-block;
+            font-size: 1.2em;
         }
         
         .stat-icon {
@@ -83,59 +117,82 @@
             justify-content: center;
             width: 24px;
             height: 24px;
-            background: rgba(0, 64, 128, 0.1);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             margin-right: 8px;
-            color: #004080;
+            color: white;
         }
         
         .leaderboard-header {
-            background: linear-gradient(135deg, #ffffff, #f0f8ff);
-            border-radius: 8px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid var(--dark);
             position: relative;
-            border-left: 5px solid #004080;
+            padding: 0;
+        }
+        
+        .leaderboard-header-content {
+            background: linear-gradient(135deg, var(--primary), #0091EA);
+            color: white;
+            padding: 10px 15px;
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
         }
         
         .leaderboard-title {
-            color: #004080;
-            margin: 0 0 15px 0;
-            font-size: 2em;
+            color: white;
+            margin: 0;
+            font-size: 1.5em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .leaderboard-species {
+            font-style: italic;
+            margin: 2px 0;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1em;
         }
         
         .leaderboard-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin: 0;
+            padding: 12px 15px;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         
         .meta-item {
             display: flex;
             align-items: center;
             background: rgba(0, 64, 128, 0.05);
-            padding: 8px 15px;
-            border-radius: 6px;
-            transition: transform 0.2s;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-size: 0.9em;
         }
         
         .meta-item:hover {
             transform: translateY(-2px);
             background: rgba(0, 64, 128, 0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .meta-label {
             font-weight: bold;
-            color: #004080;
+            color: var(--primary);
             margin-right: 8px;
         }
         
@@ -145,29 +202,30 @@
         }
         
         .leaderboard-description {
-            margin-top: 15px;
+            margin: 0;
             color: #555;
-            line-height: 1.6;
+            line-height: 1.4;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            padding: 10px 15px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.9em;
         }
         
         .main-badge {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background: linear-gradient(135deg, #ff6b00, #e05a00);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 1em;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
             font-weight: bold;
             text-transform: uppercase;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             letter-spacing: 0.5px;
+            z-index: 1;
         }
         
         @keyframes pulse {
@@ -273,64 +331,95 @@
         }
         
         .rankings-header {
-            margin: 30px 0 20px;
-            color: #004080;
+            margin: 20px 0 15px;
+            color: var(--light);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 1.5em;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            border-left: 5px solid #004080;
-            padding-left: 15px;
+            letter-spacing: 1px;
+            font-size: 1.3em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
             display: flex;
             align-items: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
         }
         
         .rankings-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             background: white;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            font-size: 0.95em;
         }
         
         .rankings-table th, .rankings-table td {
-            padding: 15px;
+            padding: 8px 12px;
             text-align: left;
-            border-bottom: 1px solid #eee;
         }
         
         .rankings-table th {
-            background: linear-gradient(135deg, #004080, #0070c0);
+            background: linear-gradient(135deg, var(--primary), #0091EA);
             font-weight: bold;
             color: white;
             text-transform: uppercase;
-            font-size: 0.9em;
+            font-size: 0.85em;
             letter-spacing: 0.5px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            border-bottom: 2px solid rgba(0,0,0,0.1);
         }
         
-        .rankings-table tr:last-child td {
+        .rankings-table tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: all 0.2s;
+        }
+        
+        .rankings-table tbody tr:last-child {
             border-bottom: none;
         }
         
-        .rankings-table tr:hover {
-            background-color: #f0f8ff;
+        .rankings-table tbody tr:hover {
+            background-color: rgba(0, 64, 128, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .ranking-number {
             font-weight: bold;
-            color: #004080;
+            color: var(--primary);
             text-align: center;
-            width: 60px;
-            font-size: 1.2em;
+            width: 40px;
+            font-size: 1.1em;
         }
         
         /* Top 3 ranks styling */
+        .rankings-table tr:nth-child(1) {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+        }
+        
+        .rankings-table tr:nth-child(2) {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+        }
+        
+        .rankings-table tr:nth-child(3) {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+        }
+        
         .rankings-table tr:nth-child(1) .ranking-number {
             color: gold;
             text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
             font-size: 1.4em;
+        }
+        
+        .rankings-table tr:nth-child(1) .ranking-number::before {
+            content: '👑';
+            position: absolute;
+            left: 10px;
+            top: 5px;
+            font-size: 0.8em;
         }
         
         .rankings-table tr:nth-child(2) .ranking-number {
@@ -346,14 +435,22 @@
         }
         
         .submission-image {
-            width: 100px;
-            height: 80px;
+            width: 80px;
+            height: 60px;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .submission-image:hover {
+            transform: scale(1.05);
         }
         
         .submission-angler {
             font-weight: bold;
+            display: flex;
+            align-items: center;
         }
         
         .submission-details {
@@ -362,12 +459,19 @@
         }
         
         .submission-link {
-            color: #004080;
+            color: var(--primary);
             text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: rgba(0, 112, 192, 0.1);
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
         }
         
         .submission-link:hover {
-            text-decoration: underline;
+            background: rgba(0, 112, 192, 0.2);
+            transform: translateY(-2px);
         }
         
         .no-submissions {
@@ -380,20 +484,22 @@
         }
         
         .prize-section {
-            margin-top: 40px;
+            margin-top: 25px;
         }
         
         .prize-title {
-            color: #004080;
-            margin-bottom: 20px;
+            color: var(--light);
+            margin-bottom: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 1.5em;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            border-left: 5px solid gold;
-            padding-left: 15px;
+            letter-spacing: 1px;
+            font-size: 1.3em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #e05a00, #ff6b00);
+            border-radius: 8px;
             display: flex;
             align-items: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
         }
         
         .prize-title::before {
@@ -403,33 +509,49 @@
         
         .prizes-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
         }
         
         .prize-card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 15px;
             transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 4px solid gold;
+            border-top: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prize-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="white" width="100" height="100"/><path d="M0 0L100 100ZM100 0L0 100Z" stroke="rgba(0,0,0,0.03)" stroke-width="1"/></svg>');
+            z-index: 0;
+            opacity: 0.5;
         }
         
         .prize-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .prize-position {
             font-weight: bold;
             color: #ff6b00;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+            margin-bottom: 8px;
+            font-size: 1em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             display: flex;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
         
         .prize-position::before {
@@ -440,37 +562,223 @@
         
         .prize-description {
             color: #333;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+            font-size: 0.9em;
         }
         
         .prize-value {
             font-weight: bold;
-            color: #004080;
+            color: var(--primary);
             background: rgba(0, 64, 128, 0.05);
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            border-radius: 20px;
             display: inline-block;
+            position: relative;
+            z-index: 1;
+            font-size: 0.9em;
         }
         
+        /* Swipe indicator */
+        .swipe-indicator {
+            display: none;
+            margin: 8px 0;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            font-size: 0.8em;
+            text-align: center;
+            color: #444;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            animation: horizontal-pulse 2s infinite;
+            transition: opacity 0.5s;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .swipe-indicator .swipe-arrow {
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .swipe-indicator.fade-out {
+            opacity: 0;
+        }
+        
+        @keyframes horizontal-pulse {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        /* Mobile Styles */
         @media (max-width: 768px) {
-            .filter-row {
+            .container {
+                padding: 10px;
+            }
+            
+            .leaderboard-header {
+                padding: 15px;
+            }
+            
+            .leaderboard-title {
+                font-size: 1.2em;
+            }
+            
+            .leaderboard-header-content {
+                padding: 8px 12px;
+            }
+            
+            .leaderboard-meta {
                 flex-direction: column;
+                gap: 8px;
+                padding: 10px;
             }
             
             .meta-item {
                 width: 100%;
+                margin-bottom: 0;
+                padding: 5px 10px;
+                font-size: 0.85em;
+            }
+            
+            .main-badge {
+                top: 8px;
+                right: 8px;
+                font-size: 0.75em;
+                padding: 4px 8px;
+            }
+            
+            .rankings-header, .prize-title {
+                font-size: 1.1em;
+                padding: 6px 12px;
+            }
+            
+            .back-link {
+                font-size: 0.85em;
+                padding: 5px 10px;
                 margin-bottom: 10px;
             }
             
+            .rankings-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
             .rankings-table {
+                min-width: 600px;
+            }
+            
+            th, td {
+                padding: 8px;
                 font-size: 0.9em;
             }
             
-            .submission-image {
-                width: 80px;
-                height: 60px;
+            .swipe-indicator {
+                display: flex;
             }
+            
+            .prizes-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .leaderboard-title {
+                font-size: 1.1em;
+            }
+            
+            .leaderboard-species {
+                font-size: 0.85em;
+            }
+            
+            .leaderboard-header-content {
+                padding: 6px 10px;
+            }
+            
+            .leaderboard-meta {
+                padding: 8px;
+            }
+            
+            .meta-item {
+                padding: 4px 8px;
+                font-size: 0.8em;
+            }
+            
+            .leaderboard-description {
+                padding: 8px;
+                font-size: 0.85em;
+            }
+            
+            .main-badge {
+                font-size: 0.7em;
+                padding: 3px 6px;
+            }
+            
+            .rankings-header, .prize-title {
+                font-size: 1em;
+                padding: 5px 10px;
+                margin-bottom: 10px;
+            }
+            
+            .rankings-table th, 
+            .rankings-table td {
+                padding: 6px;
+                font-size: 0.8em;
+            }
+            
+            .submission-image {
+                width: 60px;
+                height: 50px;
+            }
+            
+            .prize-card {
+                padding: 10px;
+            }
+            
+            .prize-position {
+                font-size: 0.9em;
+                margin-bottom: 5px;
+            }
+            
+            .prize-description {
+                font-size: 0.85em;
+                margin-bottom: 8px;
+            }
+            
+            .prize-value {
+                font-size: 0.8em;
+                padding: 4px 8px;
+            }
+            
+            .back-link {
+                font-size: 0.8em;
+                padding: 4px 8px;
+                margin-bottom: 8px;
+            }
+        }
+        
+        .ghost-name {
+            font-style: italic;
+            color: #888;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            animation: ghost-fade 3s infinite ease-in-out;
+        }
+        
+        @keyframes ghost-fade {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
         }
     </style>
 </head>
@@ -482,7 +790,9 @@
         
         <div id="leaderboard-info" class="leaderboard-header">
             <!-- Leaderboard info will be inserted here -->
-            <h1 class="leaderboard-title">Loading leaderboard...</h1>
+            <div class="leaderboard-header-content">
+                <h1 class="leaderboard-title">Loading leaderboard...</h1>
+            </div>
         </div>
         
         <h2 class="rankings-header"><span class="trophy-icon">🏆</span>Leaderboard Rankings</h2>
@@ -513,11 +823,48 @@
         let rankboardData = null
         let submissionsData = []
         
+        // Check if mobile view
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+        
+        // Add swipe indicator for mobile
+        function addSwipeIndicator() {
+            if (isMobile()) {
+                const rankingsContainer = document.getElementById('rankings-container');
+                const tables = rankingsContainer.querySelectorAll('table');
+                
+                if (tables.length > 0) {
+                    // Create swipe indicator
+                    const swipeIndicator = document.createElement('div');
+                    swipeIndicator.className = 'swipe-indicator';
+                    swipeIndicator.innerHTML = '<span>Swipe to view more</span><div class="swipe-arrow">→</div>';
+                    
+                    // Insert before the table
+                    rankingsContainer.insertBefore(swipeIndicator, tables[0]);
+                    
+                    // Remove indicator after 5 seconds
+                    setTimeout(() => {
+                        swipeIndicator.classList.add('fade-out');
+                        setTimeout(() => {
+                            if (swipeIndicator.parentNode) {
+                                swipeIndicator.parentNode.removeChild(swipeIndicator);
+                            }
+                        }, 500);
+                    }, 5000);
+                }
+            }
+        }
+        
         // Fetch leaderboard data
         async function fetchLeaderboardData() {
             try {
                 if (!leaderboardId) {
-                    document.getElementById('leaderboard-info').innerHTML = '<h1 class="leaderboard-title">Leaderboard not found</h1>'
+                    document.getElementById('leaderboard-info').innerHTML = `
+                        <div class="leaderboard-header-content">
+                            <h1 class="leaderboard-title">Leaderboard not found</h1>
+                        </div>
+                    `
                     document.getElementById('rankings-container').innerHTML = '<div class="no-submissions"><p>No leaderboard specified</p></div>'
                     return
                 }
@@ -548,8 +895,13 @@
                 const numberPrefix = data.metadata?.number ? `${data.metadata.number}. ` : ''
                 
                 leaderboardInfo.innerHTML = `
-                    <h1 class="leaderboard-title">${numberPrefix}${data.metadata?.name || 'Leaderboard'}</h1>
-                    ${data.is_main ? '<div class="main-badge">🏆 MAIN EVENT</div>' : ''}
+                    <div class="leaderboard-header-content">
+                        <h1 class="leaderboard-title">${numberPrefix}${data.metadata?.name || 'Leaderboard'}</h1>
+                        <div class="leaderboard-species">
+                            <span class="fish-icon">🎣</span>${data.species || 'All Species'}
+                        </div>
+                        ${data.is_main ? '<div class="main-badge">🏆 MAIN EVENT</div>' : ''}
+                    </div>
                     
                     <div class="leaderboard-meta">
                         <div class="meta-item">
@@ -566,6 +918,17 @@
                             <span class="meta-label">Sort Method:</span>
                             <span class="meta-value">Fish Length (Largest First)</span>
                         </div>
+                        
+                        ${data.is_main ? 
+                            `<div class="meta-item">
+                                <span class="meta-label">Payout Places:</span>
+                                <span class="meta-value">25</span>
+                            </div>` : 
+                            `<div class="meta-item">
+                                <span class="meta-label">Payout Places:</span>
+                                <span class="meta-value">2</span>
+                            </div>`
+                        }
                         
                         ${data.derby ? `
                         <div class="meta-item">
@@ -591,7 +954,9 @@
             } catch (error) {
                 console.error('Error fetching leaderboard data:', error.message)
                 document.getElementById('leaderboard-info').innerHTML = `
-                    <h1 class="leaderboard-title">Error Loading Leaderboard</h1>
+                    <div class="leaderboard-header-content">
+                        <h1 class="leaderboard-title">Error Loading Leaderboard</h1>
+                    </div>
                     <div class="leaderboard-description">
                         <p>There was an error loading the leaderboard data. Please try again later.</p>
                     </div>
@@ -694,6 +1059,21 @@
                                 submissionImage = supabase.storage.from(submission.media.bucket).getPublicUrl(submission.media.file_path).data.publicUrl
                             }
                             
+                            // Add medal icons for top 3
+                            let medalIcon = '';
+                            if (index === 0) medalIcon = '<span class="medal-icon">🥇</span> ';
+                            else if (index === 1) medalIcon = '<span class="medal-icon">🥈</span> ';
+                            else if (index === 2) medalIcon = '<span class="medal-icon">🥉</span> ';
+                            
+                            // Always display a ghost name instead of real username
+                            // Generate a random ghost name based on submission id to keep it consistent
+                            const ghostId = submission.id.substring(0, 4);
+                            const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
+                            const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
+                            const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
+                            
+                            const usernameDisplay = `<span class="ghost-name">👻 ${ghostName}</span>`;
+                            
                             return `
                                 <tr>
                                     <td class="ranking-number">${index + 1}</td>
@@ -704,8 +1084,7 @@
                                         }
                                     </td>
                                     <td class="submission-angler">
-                                        ${index < 3 ? '<span class="trophy-icon">🏆</span>' : ''}
-                                        ${submission.profile?.username || 'Anonymous'}
+                                        ${medalIcon}${usernameDisplay}
                                     </td>
                                     <td><span class="fish-icon">🐟</span>${submission.fish_type}</td>
                                     <td><strong>${submission.fish_length}</strong> inches</td>
@@ -723,6 +1102,9 @@
             `
             
             rankingsContainer.innerHTML = tableHtml
+            
+            // Add swipe indicator for mobile
+            addSwipeIndicator();
         }
         
         // Display prizes if available
@@ -781,6 +1163,14 @@
         // Fetch data when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             fetchLeaderboardData()
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                // Re-add swipe indicator if needed when resizing to mobile
+                if (isMobile() && submissionsData.length > 0) {
+                    addSwipeIndicator();
+                }
+            });
         })
     </script>
 </body>

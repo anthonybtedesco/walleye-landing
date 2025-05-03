@@ -149,7 +149,7 @@
         
         .payout-badge {
             position: absolute;
-            top: 10px;
+            top: 35px;
             right: 10px;
             background: linear-gradient(135deg, #1ab64f, #0c8a37);
             color: white;
@@ -179,26 +179,17 @@
         .leaderboard-header {
             background: linear-gradient(135deg, var(--primary), #0091EA);
             color: white;
-            padding: 20px 15px;
+            padding: 12px 15px;
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-        
-        .leaderboard-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle fill="rgba(255,255,255,0.1)" cx="10" cy="10" r="2"/></svg>');
-            background-size: 20px 20px;
-            opacity: 0.4;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4px;
         }
         
         .leaderboard-title {
-            margin: 0 0 5px;
+            margin: 0;
             font-size: 1.2em;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
             position: relative;
@@ -210,13 +201,13 @@
         
         .leaderboard-species {
             font-style: italic;
-            margin: 10px 0;
+            margin: 0;
             opacity: 0.9;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1em;
         }
         
         .fish-icon {
@@ -577,7 +568,8 @@
             }
             
             .leaderboard-header {
-                padding: 15px 10px;
+                padding: 10px;
+                gap: 2px;
             }
             
             .leaderboard-title {
@@ -589,7 +581,7 @@
             }
             
             .leaderboard-species {
-                font-size: 0.95em;
+                font-size: 0.9em;
             }
             
             .leaderboard-stats {
@@ -655,10 +647,10 @@
             }
             
             .payout-badge {
+                top: 30px;
+                right: 5px;
                 padding: 5px 10px;
                 font-size: 0.8em;
-                right: 5px;
-                top: 5px;
             }
             
             /* Add swipe indicator for horizontal scrolling */
@@ -749,6 +741,33 @@
             .main-board-img {
                 height: 100px;
             }
+            
+            .payout-badge {
+                top: 28px;
+                padding: 4px 8px;
+                font-size: 0.75em;
+            }
+            
+            .leaderboard-header {
+                padding: 8px;
+            }
+        }
+        
+        .ghost-name {
+            font-style: italic;
+            color: #888;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            animation: ghost-fade 3s infinite ease-in-out;
+        }
+        
+        @keyframes ghost-fade {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
         }
     </style>
 </head>
@@ -899,14 +918,6 @@
                                         <div class="leaderboard-species">
                                             <span class="fish-icon">🎣</span>${rankboard.species || 'All Species'}
                                         </div>
-                                        <div class="leaderboard-stats">
-                                            <div class="leaderboard-stat">
-                                                <span class="stat-icon">🏆</span> 25 Placements
-                                            </div>
-                                            <div class="leaderboard-stat">
-                                                <span class="stat-icon">💵</span> Cash Prizes
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="leaderboard-body">
                                         <div class="main-board-grid">
@@ -920,6 +931,12 @@
                                                     </div>
                                                     <div class="leaderboard-detail">
                                                         <span class="detail-label">Species:</span> ${rankboard.species || 'All'}
+                                                    </div>
+                                                    <div class="leaderboard-detail">
+                                                        <span class="detail-label">Payout Places:</span> 25
+                                                    </div>
+                                                    <div class="leaderboard-detail">
+                                                        <span class="detail-label">Prizes:</span> Cash 💰
                                                     </div>
                                                 </div>
                                             </div>
@@ -947,14 +964,6 @@
                                         <div class="leaderboard-species">
                                             <span class="fish-icon">🎣</span>${rankboard.species || 'All Species'}
                                         </div>
-                                        <div class="leaderboard-stats">
-                                            <div class="leaderboard-stat">
-                                                <span class="stat-icon">🏆</span> 5 Placements
-                                            </div>
-                                            <div class="leaderboard-stat">
-                                                <span class="stat-icon">🐟</span> ${rankboard.species || 'Any Fish'}
-                                            </div>
-                                        </div>
                                     </div>
                                     <div class="leaderboard-body">
                                         <div class="leaderboard-details">
@@ -963,6 +972,9 @@
                                             </div>
                                             <div class="leaderboard-detail">
                                                 <span class="detail-label">Radius:</span> ${rankboard.radius} mi
+                                            </div>
+                                            <div class="leaderboard-detail">
+                                                <span class="detail-label">Payout Places:</span> 2
                                             </div>
                                         </div>
                                         <div id="top-rankings-${rankboard.id}" class="top-rankings">
@@ -1094,13 +1106,22 @@
                     else if (index === 1) medalIcon = '<span class="medal-icon">🥈</span> ';
                     else if (index === 2) medalIcon = '<span class="medal-icon">🥉</span> ';
                     
+                    // Always display a ghost name instead of real username
+                    // Generate a random ghost name based on submission id to keep it consistent
+                    const ghostId = submission.id.substring(0, 4);
+                    const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
+                    const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
+                    const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
+                    
+                    const usernameDisplay = `<span class="ghost-name">👻 ${ghostName}</span>`;
+                    
                     // Add special class for top 3 ranks
                     const rankClass = index < 3 ? ` class="rank-${index + 1}"` : '';
                     
                     tableHtml += `
                         <tr${rankClass}>
                             <td>${index + 1}</td>
-                            <td>${medalIcon}${submission.profile?.username || 'Anonymous'}</td>
+                            <td>${medalIcon}${usernameDisplay}</td>
                             <td class="rank-length">${submission.fish_length}"</td>
                         </tr>
                     `;
