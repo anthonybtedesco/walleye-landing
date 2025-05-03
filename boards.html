@@ -21,12 +21,14 @@
             background: linear-gradient(135deg, var(--wf-purple), var(--wf-blue), var(--wf-purple));
             color: #333;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            overflow-y: auto;
         }
         
         .page-header {
@@ -94,41 +96,47 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             padding: 15px;
-            transition: max-height 0.3s ease-out;
+            transition: all 0.5s ease-out;
             overflow: hidden;
         }
         
         .derby-content.collapsed {
             max-height: 0;
             padding: 0 15px;
+            opacity: 0;
         }
         
         .derby-content.expanded {
-            max-height: 2000px;
+            max-height: 5000px;
+            opacity: 1;
         }
         
         /* Leaderboard card styling */
         .leaderboard {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="white" width="100" height="100"/><path d="M0 0L100 100ZM100 0L0 100Z" stroke="rgba(0,0,0,0.03)" stroke-width="1"/></svg>');
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
             position: relative;
             transition: transform 0.3s;
             overflow: hidden;
             border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
         }
         
         .leaderboard:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
         }
         
         .leaderboard.main-payout {
-            border: 2px solid #1ab64f;
+            border: 3px solid #1ab64f;
+            grid-column: 1 / -1;
         }
         
         .leaderboard.non-main-payout {
-            border: 2px solid #1ab64f;
+            border: 3px solid #1ab64f;
         }
         
         .payout-badge {
@@ -137,70 +145,327 @@
             right: 10px;
             background: linear-gradient(135deg, #1ab64f, #0c8a37);
             color: white;
-            padding: 5px 10px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.8em;
+            font-size: 0.9em;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
             z-index: 1;
+        }
+        
+        .payout-badge::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(135deg, #1ab64f, #0c8a37);
+            border-radius: 23px;
+            z-index: -2;
+            opacity: 0.3;
+            filter: blur(3px);
         }
         
         .leaderboard-header {
             background: linear-gradient(135deg, var(--wf-blue), #0091EA);
             color: white;
-            padding: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .leaderboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle fill="rgba(255,255,255,0.1)" cx="10" cy="10" r="2"/></svg>');
+            background-size: 20px 20px;
+            opacity: 0.4;
         }
         
         .leaderboard-title {
-            margin: 0;
-            font-size: 1.1em;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            margin: 0 0 5px;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .leaderboard.main-payout .leaderboard-title {
+            font-size: 1.5em;
         }
         
         .leaderboard-species {
             font-style: italic;
-            margin-top: 5px;
+            margin: 10px 0;
             opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
         }
         
         .fish-icon {
             margin-right: 5px;
             color: var(--wf-yellow);
+            font-size: 1.2em;
+        }
+        
+        .leaderboard-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .leaderboard-stat {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            margin-right: 5px;
+            font-size: 1.1em;
         }
         
         .leaderboard-body {
-            padding: 15px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
         }
         
         .leaderboard-details {
             margin-bottom: 15px;
-            font-size: 0.9em;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
         }
         
         .leaderboard-detail {
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--wf-purple);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
         
         .detail-label {
             font-weight: bold;
+            color: var(--wf-yellow);
+            margin-right: 5px;
+        }
+        
+        .top-rankings {
+            margin: 10px auto;
+            flex: 1;
+            max-width: 90%;
+            position: relative;
+        }
+        
+        .top-rankings h4 {
+            text-align: center;
             color: var(--wf-purple);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            position: relative;
+            display: inline-block;
+            padding: 0 20px;
+        }
+        
+        .top-rankings h4::before,
+        .top-rankings h4::after {
+            content: '•';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--wf-yellow);
+            font-size: 1.5em;
+        }
+        
+        .top-rankings h4::before {
+            left: 0;
+        }
+        
+        .top-rankings h4::after {
+            right: 0;
+        }
+        
+        .top-rankings-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 4px;
+            font-size: 0.9em;
+            margin: 0 auto;
+        }
+        
+        .top-rankings-table th {
+            background: rgba(93, 63, 211, 0.1);
+            padding: 10px 6px;
+            text-align: center;
+            color: var(--wf-purple);
+            font-weight: bold;
+            border-top: 1px solid rgba(93, 63, 211, 0.2);
+            border-bottom: 1px solid rgba(93, 63, 211, 0.2);
+        }
+        
+        .top-rankings-table th:first-child {
+            border-radius: 8px 0 0 8px;
+            border-left: 1px solid rgba(93, 63, 211, 0.2);
+        }
+        
+        .top-rankings-table th:last-child {
+            border-radius: 0 8px 8px 0;
+            border-right: 1px solid rgba(93, 63, 211, 0.2);
+        }
+        
+        .top-rankings-table td {
+            padding: 8px 6px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .top-rankings-table tr {
+            transition: transform 0.2s;
+        }
+        
+        .top-rankings-table tr:hover {
+            transform: scale(1.02);
+        }
+        
+        .rank-1 {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .rank-1 td {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            position: relative;
+        }
+        
+        .rank-1 td:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .rank-1 td:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .rank-1 td:first-child::before {
+            content: '👑';
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            font-size: 1em;
+        }
+        
+        .rank-2 td {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+        }
+        
+        .rank-2 td:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .rank-2 td:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .rank-3 td {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+        }
+        
+        .rank-3 td:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .rank-3 td:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .rank-length {
+            font-weight: bold;
+            text-align: center;
+            color: var(--wf-blue);
+        }
+        
+        .main-board-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            overflow: hidden;
+        }
+        
+        .main-board-ranks {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .view-button {
             display: block;
             background: linear-gradient(135deg, var(--wf-black), #444);
             color: var(--wf-yellow);
-            padding: 10px;
+            padding: 12px;
             text-align: center;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 30px;
             font-weight: bold;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .view-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(30deg);
+            transition: transform 0.5s;
+            z-index: 0;
         }
         
         .view-button:hover {
             background: linear-gradient(135deg, var(--wf-purple), #7B68EE);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+        
+        .view-button:hover::after {
+            transform: rotate(30deg) translate(10%, 10%);
+        }
+        
+        .view-button span {
+            position: relative;
+            z-index: 1;
         }
         
         .no-results {
@@ -210,6 +475,55 @@
             border-radius: 10px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             color: #666;
+        }
+        
+        .main-board-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .main-board-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: var(--wf-purple);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-board-img::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" d="M0 20 L40 20 M20 0 L20 40"/></svg>');
+            background-size: 40px 40px;
+        }
+        
+        /* Medal icons */
+        .medal-icon {
+            display: inline-block;
+            font-size: 1.2em;
+        }
+        
+        .loading-rankings {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-style: italic;
         }
         
         /* Simple animations */
@@ -232,9 +546,24 @@
             z-index: -1;
         }
         
+        /* For mobile */
         @media (max-width: 768px) {
             .derby-content {
                 grid-template-columns: 1fr;
+            }
+            
+            .main-board-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-board-ranks {
+                grid-template-columns: 1fr;
+                max-height: 300px;
+            }
+            
+            /* Improve touch scrolling on mobile */
+            .main-board-ranks {
+                -webkit-overflow-scrolling: touch;
             }
         }
     </style>
@@ -352,24 +681,92 @@
                             // Add number to title if it exists
                             const numberPrefix = rankboard.metadata.number ? `${rankboard.metadata.number}. ` : '';
                             
-                            leaderboardElement.innerHTML += `
-                                <div class="leaderboard-header">
-                                    <h3 class="leaderboard-title">${numberPrefix}${rankboard.metadata.name}</h3>
-                                    <div class="leaderboard-species">
-                                        <span class="fish-icon">🎣</span>${rankboard.species}
-                                    </div>
-                                </div>
-                                <div class="leaderboard-body">
-                                    <div class="leaderboard-details">
-                                        <div class="leaderboard-detail">
-                                            <span class="detail-label">Type:</span> ${rankboard.type_ || 'Standard'}
+                            if (rankboard.is_main) {
+                                // Enhanced layout for main board
+                                leaderboardElement.innerHTML += `
+                                    <div class="leaderboard-header">
+                                        <h3 class="leaderboard-title">${numberPrefix}${rankboard.metadata.name}</h3>
+                                        <div class="leaderboard-species">
+                                            <span class="fish-icon">🎣</span>${rankboard.species || 'All Species'}
+                                        </div>
+                                        <div class="leaderboard-stats">
+                                            <div class="leaderboard-stat">
+                                                <span class="stat-icon">🏆</span> 25 Placements
+                                            </div>
+                                            <div class="leaderboard-stat">
+                                                <span class="stat-icon">💵</span> Cash Prizes
+                                            </div>
                                         </div>
                                     </div>
-                                    <a href="leaderboard-detail.html?id=${rankboard.id}" class="view-button">
-                                        <span class="trophy-icon">🏆</span> View Rankings
-                                    </a>
-                                </div>
-                            `;
+                                    <div class="leaderboard-body">
+                                        <div class="main-board-grid">
+                                            <div class="main-board-info">
+                                                <div class="main-board-img">
+                                                    🐟 WalleyeFest 🐟
+                                                </div>
+                                                <div class="leaderboard-details">
+                                                    <div class="leaderboard-detail">
+                                                        <span class="detail-label">Type:</span> ${rankboard.type_ || 'Standard'}
+                                                    </div>
+                                                    <div class="leaderboard-detail">
+                                                        <span class="detail-label">Species:</span> ${rankboard.species || 'All'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="main-board-ranks">
+                                                <div id="top-rankings-${rankboard.id}" class="top-rankings">
+                                                    <h4>Top Anglers</h4>
+                                                    <div class="loading-rankings">Loading rankings...</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <a href="leaderboard-detail.html?id=${rankboard.id}" class="view-button">
+                                            <span><span class="trophy-icon">🏆</span> View Full Leaderboard</span>
+                                        </a>
+                                    </div>
+                                `;
+                                
+                                // Fetch top 25 submissions for this main rankboard
+                                fetchTopSubmissions(rankboard.id, 25);
+                            } else {
+                                // Regular layout for other boards
+                                leaderboardElement.innerHTML += `
+                                    <div class="leaderboard-header">
+                                        <h3 class="leaderboard-title">${numberPrefix}${rankboard.metadata.name}</h3>
+                                        <div class="leaderboard-species">
+                                            <span class="fish-icon">🎣</span>${rankboard.species || 'All Species'}
+                                        </div>
+                                        <div class="leaderboard-stats">
+                                            <div class="leaderboard-stat">
+                                                <span class="stat-icon">🏆</span> 5 Placements
+                                            </div>
+                                            <div class="leaderboard-stat">
+                                                <span class="stat-icon">🐟</span> ${rankboard.species || 'Any Fish'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="leaderboard-body">
+                                        <div class="leaderboard-details">
+                                            <div class="leaderboard-detail">
+                                                <span class="detail-label">Type:</span> ${rankboard.type_ || 'Standard'}
+                                            </div>
+                                            <div class="leaderboard-detail">
+                                                <span class="detail-label">Radius:</span> ${rankboard.radius} mi
+                                            </div>
+                                        </div>
+                                        <div id="top-rankings-${rankboard.id}" class="top-rankings">
+                                            <h4>Top 5 Anglers</h4>
+                                            <div class="loading-rankings">Loading rankings...</div>
+                                        </div>
+                                        <a href="leaderboard-detail.html?id=${rankboard.id}" class="view-button">
+                                            <span><span class="trophy-icon">🏆</span> View Rankings</span>
+                                        </a>
+                                    </div>
+                                `;
+                                
+                                // Fetch top 5 submissions for this rankboard
+                                fetchTopSubmissions(rankboard.id, 5);
+                            }
                             
                             contentElement.appendChild(leaderboardElement);
                         });
@@ -388,6 +785,121 @@
                         </div>
                     `;
                 }
+            }
+            
+            // Fetch top submissions for a rankboard
+            async function fetchTopSubmissions(rankboardId, limit) {
+                try {
+                    // Get rankboard submissions which link rankboard to submissions
+                    const { data: rankboardSubmissions, error: rankboardError } = await supabase
+                        .from('rankboard_submission')
+                        .select('*, submission:submission_id(*)')
+                        .eq('rankboard_id', rankboardId)
+                    
+                    if (rankboardError) throw rankboardError;
+                    
+                    if (!rankboardSubmissions || rankboardSubmissions.length === 0) {
+                        document.getElementById(`top-rankings-${rankboardId}`).innerHTML = `
+                            <p>No submissions yet</p>
+                        `;
+                        return;
+                    }
+                    
+                    // Extract submission IDs
+                    const submissionIds = rankboardSubmissions.map(rs => rs.submission_id);
+                    
+                    // Fetch the actual submissions with profile data
+                    const { data: submissions, error: submissionsError } = await supabase
+                        .from('submission')
+                        .select('*, profile:profile_id(*)')
+                        .in('id', submissionIds)
+                    
+                    if (submissionsError) throw submissionsError;
+                    
+                    // Combine with rankboard submission data
+                    const combinedData = [];
+                    rankboardSubmissions.forEach(rs => {
+                        const submission = submissions.find(s => s.id === rs.submission_id);
+                        if (submission) {
+                            combinedData.push({
+                                ...submission,
+                                rankboard_submission: rs
+                            });
+                        }
+                    });
+                    
+                    // Sort by fish length, largest first
+                    const sortedSubmissions = [...combinedData].sort((a, b) => b.fish_length - a.fish_length);
+                    
+                    // Display top submissions
+                    const topSubmissions = sortedSubmissions.slice(0, limit);
+                    displayTopRankings(rankboardId, topSubmissions, limit);
+                    
+                } catch (error) {
+                    console.error(`Error fetching submissions for rankboard ${rankboardId}:`, error.message);
+                    document.getElementById(`top-rankings-${rankboardId}`).innerHTML = `
+                        <p>Error loading rankings</p>
+                    `;
+                }
+            }
+            
+            // Display top rankings in the table
+            function displayTopRankings(rankboardId, submissions, limit) {
+                const rankingsContainer = document.getElementById(`top-rankings-${rankboardId}`);
+                
+                if (submissions.length === 0) {
+                    rankingsContainer.innerHTML = `<p>No submissions yet</p>`;
+                    return;
+                }
+                
+                let tableHtml = `
+                    <table class="top-rankings-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Angler</th>
+                                <th>Length</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                submissions.forEach((submission, index) => {
+                    // Add medal icons for top 3
+                    let medalIcon = '';
+                    if (index === 0) medalIcon = '<span class="medal-icon">🥇</span> ';
+                    else if (index === 1) medalIcon = '<span class="medal-icon">🥈</span> ';
+                    else if (index === 2) medalIcon = '<span class="medal-icon">🥉</span> ';
+                    
+                    // Add special class for top 3 ranks
+                    const rankClass = index < 3 ? ` class="rank-${index + 1}"` : '';
+                    
+                    tableHtml += `
+                        <tr${rankClass}>
+                            <td>${index + 1}</td>
+                            <td>${medalIcon}${submission.profile?.username || 'Anonymous'}</td>
+                            <td class="rank-length">${submission.fish_length}"</td>
+                        </tr>
+                    `;
+                });
+                
+                // Add placeholder rows if less than limit
+                for (let i = submissions.length; i < Math.min(5, limit); i++) {
+                    tableHtml += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>--</td>
+                            <td class="rank-length">--</td>
+                        </tr>
+                    `;
+                }
+                
+                tableHtml += `
+                        </tbody>
+                    </table>
+                `;
+                
+                rankingsContainer.innerHTML = tableHtml;
             }
             
             // Start the display process
