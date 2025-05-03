@@ -12,6 +12,7 @@
             padding: 0;
             background: #f5f5f5;
             color: #333;
+            background-image: linear-gradient(to bottom, #e6f0fa, #f5f5f5);
         }
         
         .container {
@@ -45,12 +46,6 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
         
-        h1 {
-            color: #004080;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
         .filters {
             background: white;
             padding: 20px;
@@ -79,9 +74,22 @@
         
         .filter-group select, .filter-group input {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+        
+        .filter-group select:hover, .filter-group input:hover {
+            border-color: #0070c0;
+        }
+        
+        .filter-group select:focus, .filter-group input:focus {
+            border-color: #004080;
+            box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.2);
+            outline: none;
         }
         
         .filter-buttons {
@@ -117,18 +125,19 @@
             background-color: #e0e0e0;
         }
         
-        .leaderboards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
+        /* Leaderboard styling */
         .leaderboard {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            border: 3px solid transparent;
+            margin-bottom: 20px;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
         }
         
         .leaderboard:hover {
@@ -136,22 +145,71 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
+        .leaderboard.main-payout {
+            border-color: #1ab64f;
+            box-shadow: 0 4px 12px rgba(26, 182, 79, 0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        .leaderboard.non-main-payout {
+            border-color: #1ab64f;
+            box-shadow: 0 4px 12px rgba(26, 182, 79, 0.2);
+            animation: pulse 3s infinite;
+        }
+        
+        .payout-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #1ab64f, #0c8a37);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* Shine effect for payout badges */
+        .payout-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+            background-size: 200px 100%;
+            border-radius: 20px;
+            animation: shine 2s infinite linear;
+            z-index: -1;
+        }
+        
         .leaderboard-header {
-            background: #004080;
+            background: linear-gradient(135deg, #004080, #0070c0);
             color: white;
             padding: 15px;
             position: relative;
+            border-bottom: 2px solid #002040;
         }
         
         .leaderboard-title {
             margin: 0;
             font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .leaderboard-species {
             font-style: italic;
             margin-top: 5px;
             opacity: 0.9;
+            display: flex;
+            align-items: center;
         }
         
         .leaderboard-badge {
@@ -164,10 +222,15 @@
             border-radius: 20px;
             font-size: 0.8em;
             font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .leaderboard-body {
             padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         
         .leaderboard-detail {
@@ -179,33 +242,45 @@
         .detail-label {
             font-weight: bold;
             width: 100px;
-            color: #666;
+            color: #004080;
         }
         
         .leaderboard-location {
             margin-top: 10px;
             font-size: 0.9em;
             color: #666;
+            display: flex;
+            align-items: flex-start;
         }
         
         .leaderboard-action {
             padding: 10px 15px;
-            text-align: right;
+            text-align: center;
             border-top: 1px solid #eee;
+            background: #f8f9fa;
         }
         
         .view-button {
-            background: #004080;
+            background: linear-gradient(135deg, #004080, #0070c0);
             color: white;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 30px;
             text-decoration: none;
-            font-size: 0.9em;
-            transition: background-color 0.3s;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            display: inline-block;
+            width: 80%;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: bold;
         }
         
         .view-button:hover {
-            background-color: #00305f;
+            background: linear-gradient(135deg, #0070c0, #004080);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
         }
         
         .derby-section {
@@ -217,24 +292,60 @@
             font-size: 1.5em;
             margin: 0 0 15px 0;
             padding: 15px;
-            background: white;
+            background: linear-gradient(135deg, #ffffff, #f0f8ff);
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: background-color 0.2s;
+            transition: all 0.3s;
+            border-left: 5px solid #004080;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .derby-title:hover {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f0f8ff, #ffffff);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .derby-title span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .derby-title .trophy-icon {
+            animation: bounce 2s infinite;
+        }
+        
+        .derby-title.popular {
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid gold;
+            background: linear-gradient(135deg, #fffcf0, #fff8e0);
+        }
+        
+        .derby-title.popular::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(255,215,0,0.2) 50%, transparent 100%);
+            background-size: 200px 100%;
+            animation: shine 3s infinite linear;
         }
         
         .derby-title::after {
             content: '▼';
             font-size: 0.8em;
             transition: transform 0.3s;
+            margin-left: 10px;
         }
         
         .derby-title.collapsed::after {
@@ -243,10 +354,11 @@
         
         .derby-content {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
             transition: max-height 0.3s ease-out;
             overflow: hidden;
+            padding: 10px;
         }
         
         .derby-content.collapsed {
@@ -255,6 +367,16 @@
         
         .derby-content.expanded {
             max-height: 2000px;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #666;
         }
         
         @media (max-width: 768px) {
@@ -267,306 +389,288 @@
             }
         }
         
-        .no-results {
-            grid-column: 1 / -1;
+        /* Additional gamification styles */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shine {
+            0% { background-position: -100px; }
+            100% { background-position: 200px; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .trophy-icon {
+            display: inline-block;
+            margin-right: 5px;
+            color: gold;
+            font-size: 1.1em;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .fish-icon {
+            display: inline-block;
+            margin-right: 5px;
+            color: #0070c0;
+            font-size: 1.1em;
+        }
+        
+        /* Add gamified icons to the filter section */
+        .filter-icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        
+        /* Page header with sporty branding */
+        .page-header {
             text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header-title {
+            font-size: 2.5em;
+            color: #004080;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header-title::before, .header-title::after {
+            content: "🏆";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7em;
+        }
+        
+        .header-title::before {
+            left: -40px;
+        }
+        
+        .header-title::after {
+            right: -40px;
+        }
+        
+        .subheader {
+            font-size: 1.1em;
             color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Stat icons for leaderboards */
+        .stat-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(0, 64, 128, 0.1);
+            border-radius: 50%;
+            margin-right: 8px;
+            color: #004080;
+        }
+        
+        /* Water-like background for containers */
+        .water-bg {
+            background: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(225, 240, 255, 0.8));
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 64, 128, 0.1);
+            padding: 10px;
+            margin-bottom: 40px;
         }
     </style>
 </head>
 <body>
-    <div class="navigation">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="event.html" class="nav-link">Events</a>
-        <a href="post.html" class="nav-link">Posts</a>
-        <a href="sponsor.html" class="nav-link">Sponsors</a>
-        <a href="boards.html" class="nav-link active">Leaderboards</a>
-    </div>
+
     
     <div class="container">
-        <h1>Fishing Leaderboards</h1>
-        
-        <div class="filters">
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label for="filter-species">Fish Species</label>
-                    <select id="filter-species">
-                        <option value="">All Species</option>
-                        <!-- Species options will be populated dynamically -->
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="filter-derby">Derby</label>
-                    <select id="filter-derby">
-                        <option value="">All Derbies</option>
-                        <!-- Derby options will be populated dynamically -->
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="filter-sort">Sort By</label>
-                    <select id="filter-sort">
-                        <option value="recent">Most Recent</option>
-                        <option value="name">Name</option>
-                        <option value="species">Species</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="filter-buttons">
-                <button class="reset-filter" id="reset-filters">Reset Filters</button>
-                <button class="apply-filter" id="apply-filters">Apply Filters</button>
-            </div>
+        <div class="page-header">
+            <h1 class="header-title">WalleyeFest 2025 Leaderboards</h1>
         </div>
         
-        <div id="leaderboards-container">
+        <div id="leaderboards-container" class="water-bg">
             <!-- Leaderboards will be inserted here -->
+            <div class="no-results">
+                <p>Loading leaderboards...</p>
+            </div>
         </div>
     </div>
     
+    <script src="script.js"></script>
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-        
-        // Filters state
-        let filters = {
-            species: '',
-            derby: '',
-            sort: 'recent'
-        }
-        
-        // Fetch and display rankboards
-        async function fetchRankboards() {
-            try {
-                console.log('Fetching rankboards...')
-                const { data, error } = await supabase
-                    .from('rankboard')
-                    .select('*, media:logo_media_id(*), derby:derby_id(*, product:product_id(*)), product:product_id(*)')
-                    .order('created_at', { ascending: false })
-                
-                if (error) throw error
-                
-                console.log('Rankboards:', data)
-                
-                // Populate species dropdown with unique values
-                const speciesSet = new Set()
-                data.forEach(rankboard => {
-                    if (rankboard.species) {
-                        speciesSet.add(rankboard.species)
-                    }
-                })
-                
-                const speciesDropdown = document.getElementById('filter-species')
-                speciesDropdown.innerHTML = '<option value="">All Species</option>'
-                speciesSet.forEach(species => {
-                    const option = document.createElement('option')
-                    option.value = species
-                    option.textContent = species
-                    speciesDropdown.appendChild(option)
-                })
-                
-                // Populate derby dropdown with unique values
-                const derbySet = new Set()
-                const derbyMap = new Map()
-                data.forEach(rankboard => {
-                    if (rankboard.derby && rankboard.derby.id) {
-                        derbySet.add(rankboard.derby.id)
-                        derbyMap.set(rankboard.derby.id, rankboard.derby.name || 'Derby Event')
-                    }
-                })
-                
-                const derbyDropdown = document.getElementById('filter-derby')
-                derbyDropdown.innerHTML = '<option value="">All Derbies</option>'
-                derbySet.forEach(derbyId => {
-                    const option = document.createElement('option')
-                    option.value = derbyId
-                    option.textContent = derbyMap.get(derbyId)
-                    derbyDropdown.appendChild(option)
-                })
-                
-                // Apply filters
-                let filteredData = data
-                
-                if (filters.species) {
-                    filteredData = filteredData.filter(rankboard => rankboard.species === filters.species)
-                }
-                
-                if (filters.derby) {
-                    filteredData = filteredData.filter(rankboard => rankboard.derby && rankboard.derby.id === filters.derby)
-                }
-                
-                // Apply sorting
-                switch (filters.sort) {
-                    case 'name':
-                        filteredData.sort((a, b) => {
-                            const nameA = a.metadata?.name || ''
-                            const nameB = b.metadata?.name || ''
-                            return nameA.localeCompare(nameB)
-                        })
-                        break
-                    case 'species':
-                        filteredData.sort((a, b) => {
-                            const speciesA = a.species || ''
-                            const speciesB = b.species || ''
-                            return speciesA.localeCompare(speciesB)
-                        })
-                        break
-                    default: // 'recent' - already sorted by created_at desc
-                        break
-                }
-                
-                displayRankboards(filteredData)
-            } catch (error) {
-                console.error('Error fetching rankboards:', error.message)
-            }
-        }
-        
-        // Display rankboards
-        function displayRankboards(rankboards) {
-            const leaderboardsContainer = document.getElementById('leaderboards-container')
-            leaderboardsContainer.innerHTML = '' // Clear existing leaderboards
-            
-            // Group rankboards by derby_id
-            const groupedByDerby = {}
-            
-            rankboards.forEach(rankboard => {
-                const derbyId = rankboard.derby_id || 'no_derby'
-                if (!groupedByDerby[derbyId]) {
-                    groupedByDerby[derbyId] = []
-                }
-                groupedByDerby[derbyId].push(rankboard)
-            })
-            
-            // If no results after filtering
-            if (Object.keys(groupedByDerby).length === 0) {
-                const noResults = document.createElement('div')
-                noResults.className = 'no-results'
-                noResults.textContent = 'No leaderboards match your filter criteria.'
-                leaderboardsContainer.appendChild(noResults)
-                return
-            }
-            
-            // Process each derby group
-            Object.entries(groupedByDerby).forEach(([derbyId, derbysRankboards]) => {
-                // Sort rankboards within each derby by metadata.number if it exists
-                derbysRankboards.sort((a, b) => {
-                    const numA = a.metadata?.number || 0
-                    const numB = b.metadata?.number || 0
-                    return numA - numB
-                })
-                
-                // Create a derby section
-                const derbySectionElement = document.createElement('div')
-                derbySectionElement.className = 'derby-section'
-                
-                // Derby title
-                const titleElement = document.createElement('h2')
-                titleElement.className = 'derby-title'
-                
-                if (derbyId !== 'no_derby') {
-                    titleElement.textContent = derbysRankboards[0].derby?.name || 'Derby Event'
-                } else {
-                    titleElement.textContent = 'Other Leaderboards'
-                }
-                
-                // Create the content container
-                const contentElement = document.createElement('div')
-                contentElement.className = 'derby-content expanded'
-                
-                // Add click handler for collapsing/expanding
-                titleElement.addEventListener('click', () => {
-                    titleElement.classList.toggle('collapsed')
-                    contentElement.classList.toggle('collapsed')
-                    contentElement.classList.toggle('expanded')
-                })
-                
-                // Add rankboards to the content container
-                derbysRankboards.forEach(rankboard => {
-                    if (!rankboard.metadata?.name) {
-                        return // Skip rankboards without a name
-                    }
-                    
-                    const leaderboardElement = document.createElement('div')
-                    leaderboardElement.className = 'leaderboard'
-                    
-                    // Get the image URL if media exists
-                    let logoUrl = ''
-                    if (rankboard.media) {
-                        const logoData = supabase.storage.from(rankboard.media.bucket).getPublicUrl(rankboard.media.file_path)
-                        logoUrl = logoData.data.publicUrl
-                    }
-                    
-                    // Add number to title if it exists
-                    const numberPrefix = rankboard.metadata.number ? `${rankboard.metadata.number}. ` : ''
-                    
-                    leaderboardElement.innerHTML = `
-                        <div class="leaderboard-header">
-                            <h3 class="leaderboard-title">${numberPrefix}${rankboard.metadata.name}</h3>
-                            <div class="leaderboard-species">${rankboard.species}</div>
-                            ${rankboard.is_main ? '<span class="leaderboard-badge">Main</span>' : ''}
-                        </div>
-                        <div class="leaderboard-body">
-                            <div class="leaderboard-detail">
-                                <span class="detail-label">Type:</span>
-                                <span>${rankboard.type_ || 'Standard'}</span>
-                            </div>
-                            <div class="leaderboard-detail">
-                                <span class="detail-label">Sort by:</span>
-                                <span>${rankboard.sorter_type || 'Default'}</span>
-                            </div>
-                            <div class="leaderboard-location">
-                                Location: ${rankboard.center_lat.toFixed(4)}, ${rankboard.center_long.toFixed(4)} 
-                                (${rankboard.radius} mi radius)
-                            </div>
-                        </div>
-                        <div class="leaderboard-action">
-                            <a href="leaderboard-detail.html?id=${rankboard.id}" class="view-button">View Rankings</a>
-                        </div>
-                    `
-                    
-                    contentElement.appendChild(leaderboardElement)
-                })
-                
-                // Assemble the derby section
-                derbySectionElement.appendChild(titleElement)
-                derbySectionElement.appendChild(contentElement)
-                leaderboardsContainer.appendChild(derbySectionElement)
-            })
-        }
-        
-        // Event listeners for filters
-        document.getElementById('apply-filters').addEventListener('click', () => {
-            filters.species = document.getElementById('filter-species').value
-            filters.derby = document.getElementById('filter-derby').value
-            filters.sort = document.getElementById('filter-sort').value
-            fetchRankboards()
-        })
-        
-        document.getElementById('reset-filters').addEventListener('click', () => {
-            document.getElementById('filter-species').value = ''
-            document.getElementById('filter-derby').value = ''
-            document.getElementById('filter-sort').value = 'recent'
-            
-            filters = {
-                species: '',
-                derby: '',
-                sort: 'recent'
-            }
-            
-            fetchRankboards()
-        })
-        
-        // Fetch data when the page loads
+        // Custom script for boards.html
         document.addEventListener('DOMContentLoaded', () => {
-            fetchRankboards()
-        })
+            const leaderboardsContainer = document.getElementById('leaderboards-container');
+            
+            // Display the rankboards (this uses the fetchEvents function which fetches rankboard data)
+            async function displayRankboards() {
+                try {
+                    // First, fetch the data using the existing function
+                    const { data, error } = await supabase
+                        .from('rankboard')
+                        .select('*, media:logo_media_id(*), derby:derby_id(*, product:product_id(*)), product:product_id(*)')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    // Group rankboards by derby_id
+                    const groupedByDerby = {};
+                    const derbySet = new Set();
+                    
+                    data.forEach(rankboard => {
+                        const derbyId = rankboard.derby_id || 'no_derby';
+                        if (rankboard.derby && rankboard.derby.id) {
+                            derbySet.add(rankboard.derby.id);
+                        }
+                        if (!groupedByDerby[derbyId]) {
+                            groupedByDerby[derbyId] = [];
+                        }
+                        groupedByDerby[derbyId].push(rankboard);
+                    });
+                    
+                    leaderboardsContainer.innerHTML = ''; // Clear loading message
+                    
+                    // Process each derby group
+                    Object.entries(groupedByDerby).forEach(([derbyId, rankboards]) => {
+                        // Sort rankboards within each derby by metadata.number if it exists
+                        rankboards.sort((a, b) => {
+                            const numA = a.metadata?.number || 0;
+                            const numB = b.metadata?.number || 0;
+                            return numA - numB;
+                        });
+                        
+                        // Create a derby section if it's a valid derby
+                        const derbySectionElement = document.createElement('div');
+                        derbySectionElement.className = 'derby-section';
+                        
+                        // Create the title element
+                        const titleElement = document.createElement('h2');
+                        titleElement.className = 'derby-title';
+                        
+                        if (derbyId !== 'no_derby') {
+                            // Add 'popular' class to first derby
+                            if (rankboards[0].derby?.id === Array.from(derbySet)[0]) {
+                                titleElement.classList.add('popular');
+                            }
+                            
+                            titleElement.innerHTML = `
+                                <span>
+                                    <span class="trophy-icon">🏆</span>
+                                    ${rankboards[0].derby?.name || 'Derby Event'}
+                                </span>
+                            `;
+                        } else {
+                            
+                        }
+                        // Create the content container
+                        const contentElement = document.createElement('div');
+                        contentElement.className = 'derby-content expanded';
+                        
+                        // Add click handler for collapsing/expanding
+                        titleElement.addEventListener('click', () => {
+                            titleElement.classList.toggle('collapsed');
+                            contentElement.classList.toggle('collapsed');
+                            contentElement.classList.toggle('expanded');
+                        });
+                        
+                        // Add rankboards to the content container
+                        rankboards.forEach(rankboard => {
+                            if (!rankboard.metadata?.name) {
+                                return; // Skip rankboards without a name
+                            }
+                            
+                            const leaderboardElement = document.createElement('div');
+                            leaderboardElement.className = 'leaderboard';
+                            
+                            // Determine if this is a payout leaderboard
+                            if (rankboard.is_main) {
+                                leaderboardElement.classList.add('main-payout');
+                                leaderboardElement.innerHTML = `<div class="payout-badge">💰 TOP 25 PAYOUTS</div>`;
+                            } else {
+                                leaderboardElement.classList.add('non-main-payout');
+                                leaderboardElement.innerHTML = `<div class="payout-badge">💰 TOP 2 PAYOUTS</div>`;
+                            }
+                            
+                            // Get the image URL if media exists
+                            let logoUrl = '';
+                            if (rankboard.media) {
+                                const logoData = supabase.storage.from(rankboard.media.bucket).getPublicUrl(rankboard.media.file_path);
+                                logoUrl = logoData.data.publicUrl;
+                            }
+
+                            // Add number to title if it exists
+                            const numberPrefix = rankboard.metadata.number ? `${rankboard.metadata.number}. ` : '';
+                            
+                            leaderboardElement.innerHTML += `
+                                <div class="leaderboard-header">
+                                    <h3 class="leaderboard-title">${numberPrefix}${rankboard.metadata.name}</h3>
+                                    <div class="leaderboard-species">
+                                        <span class="fish-icon">🎣</span>${rankboard.species}
+                                    </div>
+                                    ${rankboard.is_main ? '<span class="leaderboard-badge">Main</span>' : ''}
+                                </div>
+                                <div class="leaderboard-body">
+                                    <div class="leaderboard-details">
+                                        <div class="leaderboard-detail">
+                                            <span class="detail-label"><span class="stat-icon">📊</span>Type:</span>
+                                            <span>${rankboard.type_ || 'Standard'}</span>
+                                        </div>
+                                        <div class="leaderboard-detail">
+                                            <span class="detail-label"><span class="stat-icon">📋</span>Sort by:</span>
+                                            <span>${rankboard.sorter_type || 'Default'}</span>
+                                        </div>
+                                        <div class="leaderboard-location">
+                                            <span class="detail-label"><span class="stat-icon">📍</span>Location:</span> 
+                                            <span>${rankboard.center_lat.toFixed(4)}, ${rankboard.center_long.toFixed(4)} 
+                                            (${rankboard.radius} mi radius)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="leaderboard-action">
+                                    <a href="leaderboard-detail.html?id=${rankboard.id}" class="view-button">
+                                        <span class="trophy-icon">🏆</span> View Rankings
+                                    </a>
+                                </div>
+                            `;
+                            
+                            contentElement.appendChild(leaderboardElement);
+                        });
+                        
+                        // Assemble the derby section
+                        derbySectionElement.appendChild(titleElement);
+                        derbySectionElement.appendChild(contentElement);
+                        leaderboardsContainer.appendChild(derbySectionElement);
+                    });
+                    
+                } catch (error) {
+                    console.error('Error loading rankboards:', error);
+                    leaderboardsContainer.innerHTML = `
+                        <div class="no-results">
+                            <p>Error loading leaderboards. Please try again later.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Start the display process
+            displayRankboards();
+        });
     </script>
 </body>
 </html> 
