@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WalleyeFest - Leaderboard Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .navigation {
+            background: #004080;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #004080;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .back-link::before {
+            content: '←';
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .leaderboard-header {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .leaderboard-title {
+            color: #004080;
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+        }
+        
+        .leaderboard-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .meta-label {
+            font-weight: bold;
+            color: #666;
+            margin-right: 8px;
+        }
+        
+        .meta-value {
+            color: #333;
+        }
+        
+        .leaderboard-description {
+            margin-top: 15px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .main-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff6b00;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .map-container {
+            height: 300px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .apply-filter {
+            background-color: #004080;
+            color: white;
+        }
+        
+        .reset-filter {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .apply-filter:hover {
+            background-color: #00305f;
+        }
+        
+        .reset-filter:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .rankings-header {
+            margin: 30px 0 20px;
+            color: #004080;
+        }
+        
+        .rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .rankings-table th, .rankings-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .rankings-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .rankings-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .rankings-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .ranking-number {
+            font-weight: bold;
+            color: #004080;
+            text-align: center;
+            width: 60px;
+        }
+        
+        .submission-image {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .submission-angler {
+            font-weight: bold;
+        }
+        
+        .submission-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .submission-link {
+            color: #004080;
+            text-decoration: none;
+        }
+        
+        .submission-link:hover {
+            text-decoration: underline;
+        }
+        
+        .no-submissions {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #666;
+        }
+        
+        .prize-section {
+            margin-top: 40px;
+        }
+        
+        .prize-title {
+            color: #004080;
+            margin-bottom: 15px;
+        }
+        
+        .prizes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .prize-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        
+        .prize-position {
+            font-weight: bold;
+            color: #ff6b00;
+            margin-bottom: 5px;
+        }
+        
+        .prize-description {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .prize-value {
+            font-weight: bold;
+            color: #004080;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .meta-item {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .rankings-table {
+                font-size: 0.9em;
+            }
+            
+            .submission-image {
+                width: 80px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="event.html" class="nav-link">Events</a>
+        <a href="post.html" class="nav-link">Posts</a>
+        <a href="sponsor.html" class="nav-link">Sponsors</a>
+        <a href="boards.html" class="nav-link">Leaderboards</a>
+    </div>
+    
+    <div class="container">
+        <a href="boards.html" class="back-link">Back to Leaderboards</a>
+        
+        <div id="leaderboard-info" class="leaderboard-header">
+            <!-- Leaderboard info will be inserted here -->
+            <h1 class="leaderboard-title">Loading leaderboard...</h1>
+        </div>
+        
+        <div class="map-container">
+            <!-- Map to be implemented with Google Maps or similar -->
+            <p>Map showing leaderboard boundaries will be displayed here</p>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filter-sort">Sort By</label>
+                    <select id="filter-sort">
+                        <option value="rank">Rank (Default)</option>
+                        <option value="recent">Most Recent</option>
+                        <option value="length">Fish Length</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filter-search">Search Angler</label>
+                    <input type="text" id="filter-search" placeholder="Enter angler name">
+                </div>
+            </div>
+            
+            <div class="filter-buttons">
+                <button class="reset-filter" id="reset-filters">Reset Filters</button>
+                <button class="apply-filter" id="apply-filters">Apply Filters</button>
+            </div>
+        </div>
+        
+        <h2 class="rankings-header">Leaderboard Rankings</h2>
+        
+        <div id="rankings-container">
+            <!-- Rankings will be inserted here -->
+            <div class="no-submissions">
+                <p>Loading submissions...</p>
+            </div>
+        </div>
+        
+        <div id="prizes-container" class="prize-section">
+            <!-- Prizes will be inserted here if available -->
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+        
+        // Get leaderboard ID from URL
+        const urlParams = new URLSearchParams(window.location.search)
+        const leaderboardId = urlParams.get('id')
+        
+        // Filters state
+        let filters = {
+            sort: 'rank',
+            search: ''
+        }
+        
+        // Store data for re-filtering
+        let rankboardData = null
+        let submissionsData = []
+        
+        // Fetch leaderboard data
+        async function fetchLeaderboardData() {
+            try {
+                if (!leaderboardId) {
+                    document.getElementById('leaderboard-info').innerHTML = '<h1 class="leaderboard-title">Leaderboard not found</h1>'
+                    document.getElementById('rankings-container').innerHTML = '<div class="no-submissions"><p>No leaderboard specified</p></div>'
+                    return
+                }
+                
+                const { data, error } = await supabase
+                    .from('rankboard')
+                    .select('*, media:logo_media_id(*), derby:derby_id(*, product:product_id(*)), product:product_id(*)')
+                    .eq('id', leaderboardId)
+                    .single()
+                
+                if (error) throw error
+                
+                rankboardData = data
+                console.log('Rankboard data:', data)
+                
+                // Update the page title
+                document.title = `WalleyeFest - ${data.metadata?.name || 'Leaderboard'}`
+                
+                // Display leaderboard info
+                const leaderboardInfo = document.getElementById('leaderboard-info')
+                
+                let logoUrl = ''
+                if (data.media) {
+                    logoUrl = supabase.storage.from(data.media.bucket).getPublicUrl(data.media.file_path).data.publicUrl
+                }
+                
+                // Add number to title if it exists
+                const numberPrefix = data.metadata?.number ? `${data.metadata.number}. ` : ''
+                
+                leaderboardInfo.innerHTML = `
+                    <h1 class="leaderboard-title">${numberPrefix}${data.metadata?.name || 'Leaderboard'}</h1>
+                    ${data.is_main ? '<div class="main-badge">Main</div>' : ''}
+                    
+                    <div class="leaderboard-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Species:</span>
+                            <span class="meta-value">${data.species || 'All'}</span>
+                        </div>
+                        
+                        <div class="meta-item">
+                            <span class="meta-label">Type:</span>
+                            <span class="meta-value">${data.type_ || 'Standard'}</span>
+                        </div>
+                        
+                        <div class="meta-item">
+                            <span class="meta-label">Sort Method:</span>
+                            <span class="meta-value">${data.sorter_type || 'Default'}</span>
+                        </div>
+                        
+                        ${data.derby ? `
+                        <div class="meta-item">
+                            <span class="meta-label">Derby:</span>
+                            <span class="meta-value">${data.derby.name || 'Derby Event'}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="leaderboard-description">
+                        <p>Location: ${data.center_lat.toFixed(4)}, ${data.center_long.toFixed(4)} (${data.radius} mile radius)</p>
+                        ${data.metadata?.description ? `<p>${data.metadata.description}</p>` : ''}
+                    </div>
+                `
+                
+                // Display prizes if available
+                if (data.prizes && Object.keys(data.prizes).length > 0) {
+                    displayPrizes(data.prizes)
+                }
+                
+                // Fetch submissions for this rankboard
+                fetchLeaderboardSubmissions(data.id)
+            } catch (error) {
+                console.error('Error fetching leaderboard data:', error.message)
+                document.getElementById('leaderboard-info').innerHTML = `
+                    <h1 class="leaderboard-title">Error Loading Leaderboard</h1>
+                    <div class="leaderboard-description">
+                        <p>There was an error loading the leaderboard data. Please try again later.</p>
+                    </div>
+                `
+            }
+        }
+        
+        // Fetch submissions for the leaderboard
+        async function fetchLeaderboardSubmissions(rankboardId) {
+            try {
+                // Get rankboard submissions which link rankboard to submissions
+                const { data: rankboardSubmissions, error: rankboardError } = await supabase
+                    .from('rankboard_submission')
+                    .select('*, submission:submission_id(*)')
+                    .eq('rankboard_id', rankboardId)
+                
+                if (rankboardError) throw rankboardError
+                
+                if (!rankboardSubmissions || rankboardSubmissions.length === 0) {
+                    document.getElementById('rankings-container').innerHTML = `
+                        <div class="no-submissions">
+                            <p>No submissions have been made to this leaderboard yet.</p>
+                        </div>
+                    `
+                    return
+                }
+                
+                // Extract submission IDs
+                const submissionIds = rankboardSubmissions.map(rs => rs.submission_id)
+                
+                // Fetch the actual submissions with profile and media data
+                const { data: submissions, error: submissionsError } = await supabase
+                    .from('submission')
+                    .select('*, profile:profile_id(*), media:media_id(*)')
+                    .in('id', submissionIds)
+                
+                if (submissionsError) throw submissionsError
+                
+                console.log('Submissions:', submissions)
+                
+                // Combine with rankboard submission data to preserve ordering
+                const combinedData = []
+                rankboardSubmissions.forEach(rs => {
+                    const submission = submissions.find(s => s.id === rs.submission_id)
+                    if (submission) {
+                        combinedData.push({
+                            ...submission,
+                            rankboard_submission: rs
+                        })
+                    }
+                })
+                
+                submissionsData = combinedData
+                displaySubmissions(combinedData)
+            } catch (error) {
+                console.error('Error fetching submissions:', error.message)
+                document.getElementById('rankings-container').innerHTML = `
+                    <div class="no-submissions">
+                        <p>Error loading submissions. Please try again later.</p>
+                    </div>
+                `
+            }
+        }
+        
+        // Display submissions based on current filters
+        function displaySubmissions(submissions) {
+            let filteredSubmissions = [...submissions]
+            
+            // Apply search filter if any
+            if (filters.search) {
+                const searchTerm = filters.search.toLowerCase()
+                filteredSubmissions = filteredSubmissions.filter(submission => 
+                    submission.profile?.username?.toLowerCase().includes(searchTerm)
+                )
+            }
+            
+            // Apply sorting
+            switch (filters.sort) {
+                case 'length':
+                    filteredSubmissions.sort((a, b) => b.fish_length - a.fish_length)
+                    break
+                case 'recent':
+                    filteredSubmissions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    break
+                default: // 'rank' - use default order from rankboard_submission
+                    // Already sorted by the query
+                    break
+            }
+            
+            const rankingsContainer = document.getElementById('rankings-container')
+            
+            if (filteredSubmissions.length === 0) {
+                rankingsContainer.innerHTML = `
+                    <div class="no-submissions">
+                        <p>No submissions match your filter criteria.</p>
+                    </div>
+                `
+                return
+            }
+            
+            const tableHtml = `
+                <table class="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Photo</th>
+                            <th>Angler</th>
+                            <th>Species</th>
+                            <th>Length</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredSubmissions.map((submission, index) => {
+                            let submissionImage = ''
+                            if (submission.media) {
+                                submissionImage = supabase.storage.from(submission.media.bucket).getPublicUrl(submission.media.file_path).data.publicUrl
+                            }
+                            
+                            return `
+                                <tr>
+                                    <td class="ranking-number">${index + 1}</td>
+                                    <td>
+                                        ${submissionImage ? 
+                                            `<img src="${submissionImage}" alt="Fish" class="submission-image">` : 
+                                            '<div class="submission-image" style="background: #eee; display: flex; align-items: center; justify-content: center; color: #999;">No image</div>'
+                                        }
+                                    </td>
+                                    <td class="submission-angler">${submission.profile?.username || 'Anonymous'}</td>
+                                    <td>${submission.fish_type}</td>
+                                    <td>${submission.fish_length} inches</td>
+                                    <td>${new Date(submission.created_at).toLocaleDateString()}</td>
+                                    <td>
+                                        <a href="submission-detail.html?id=${submission.id}" class="submission-link">View Details</a>
+                                    </td>
+                                </tr>
+                            `
+                        }).join('')}
+                    </tbody>
+                </table>
+            `
+            
+            rankingsContainer.innerHTML = tableHtml
+        }
+        
+        // Display prizes if available
+        function displayPrizes(prizes) {
+            const prizesContainer = document.getElementById('prizes-container')
+            
+            if (!prizes || Object.keys(prizes).length === 0) {
+                prizesContainer.style.display = 'none'
+                return
+            }
+            
+            let prizesHtml = `
+                <h2 class="prize-title">Prizes</h2>
+                <div class="prizes-list">
+            `
+            
+            // Handle different prize data structures
+            if (Array.isArray(prizes)) {
+                // If prizes is an array
+                prizes.forEach((prize, index) => {
+                    prizesHtml += `
+                        <div class="prize-card">
+                            <div class="prize-position">${getOrdinal(index + 1)} Place</div>
+                            <div class="prize-description">${prize.description || prize.name || 'Prize'}</div>
+                            ${prize.value ? `<div class="prize-value">Value: $${prize.value}</div>` : ''}
+                        </div>
+                    `
+                })
+            } else {
+                // If prizes is an object with positions as keys
+                Object.entries(prizes).forEach(([position, prize]) => {
+                    prizesHtml += `
+                        <div class="prize-card">
+                            <div class="prize-position">${position}</div>
+                            <div class="prize-description">${typeof prize === 'object' ? 
+                                (prize.description || prize.name || 'Prize') : 
+                                prize}</div>
+                            ${typeof prize === 'object' && prize.value ? 
+                                `<div class="prize-value">Value: $${prize.value}</div>` : ''}
+                        </div>
+                    `
+                })
+            }
+            
+            prizesHtml += `</div>`
+            prizesContainer.innerHTML = prizesHtml
+        }
+        
+        // Helper function to get ordinal suffix
+        function getOrdinal(n) {
+            const s = ['th', 'st', 'nd', 'rd']
+            const v = n % 100
+            return n + (s[(v - 20) % 10] || s[v] || s[0])
+        }
+        
+        // Event listeners for filters
+        document.getElementById('apply-filters').addEventListener('click', () => {
+            filters.sort = document.getElementById('filter-sort').value
+            filters.search = document.getElementById('filter-search').value
+            
+            displaySubmissions(submissionsData)
+        })
+        
+        document.getElementById('reset-filters').addEventListener('click', () => {
+            document.getElementById('filter-sort').value = 'rank'
+            document.getElementById('filter-search').value = ''
+            
+            filters = {
+                sort: 'rank',
+                search: ''
+            }
+            
+            displaySubmissions(submissionsData)
+        })
+        
+        // Fetch data when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchLeaderboardData()
+        })
+    </script>
+</body>
+</html> 

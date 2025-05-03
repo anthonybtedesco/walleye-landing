@@ -6,14 +6,41 @@
     <title>Submission Presentation</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
             background: #000;
             color: white;
             height: 100vh;
             overflow: hidden;
+        }
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        .splash-logo {
+            max-width: 50%;
+            max-height: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         .presentation-container {
             height: 100vh;
@@ -23,6 +50,8 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
         }
         .presentation-slide {
             width: 100%;
@@ -34,11 +63,13 @@
             padding: 2rem;
             box-sizing: border-box;
             background: linear-gradient(135deg, #001428, #003366);
+            position: relative;
         }
         .presentation-header {
             text-align: center;
             margin-bottom: 2rem;
             width: 100%;
+            z-index: 10;
         }
         .fish-type {
             color: #ffffff;
@@ -60,12 +91,18 @@
             justify-content: center;
             width: 100%;
             height: 60vh;
+            position: relative;
+            z-index: 5;
         }
         .media-item {
             flex: 1;
             max-width: 33.333%;
             position: relative;
             height: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+            overflow: hidden;
         }
         .media-image {
             width: 100%;
@@ -90,6 +127,38 @@
             right: 0;
             background: rgba(0,20,40,0.7);
             padding: 5px 0;
+            text-align: center;
+        }
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+        }
+        .play-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: rgba(0,0,0,0.7);
+        }
+        .play-button::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 10px 0 10px 20px;
+            border-color: transparent transparent transparent white;
+            margin-left: 5px;
         }
         .submission-note {
             color: #E1F5FE;
@@ -98,12 +167,13 @@
             max-width: 80%;
             text-align: center;
             line-height: 1.6;
+            z-index: 10;
         }
         .controls {
             position: absolute;
             top: 20px;
             left: 20px;
-            z-index: 10;
+            z-index: 50;
         }
         .back-button {
             display: inline-block;
@@ -153,6 +223,10 @@
     </style>
 </head>
 <body>
+    <div class="splash-screen" id="splash-screen">
+        <img src="https://tdecpfvclvqcqjfyxgnn.supabase.co/storage/v1/object/public/public-images//walleyefesttrans.png" alt="WalleyeFest" class="splash-logo">
+    </div>
+    
     <div class="presentation-container" id="presentation-container">
         <!-- Presentation will be dynamically inserted here -->
     </div>
@@ -166,6 +240,17 @@
         const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        // Splash screen handling
+        setTimeout(() => {
+            document.getElementById('splash-screen').style.opacity = 0;
+            document.getElementById('presentation-container').style.opacity = 1;
+            
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+            }, 1000);
+            
+        }, 3000); // Show splash for 3 seconds
 
         async function fetchSubmissionPresentation() {
             try {
@@ -196,30 +281,74 @@
                         
                         <div class="media-container">
                             ${mainImage ? `
-                                <div class="media-item">
+                                <div class="media-item" id="main-image">
                                     <img src="${mainImage.data.publicUrl}" alt="Fish Image" class="media-image">
                                     <div class="media-label">Main Image</div>
                                 </div>
                             ` : ''}
                             
                             ${heroImage ? `
-                                <div class="media-item">
+                                <div class="media-item" id="hero-image">
                                     <img src="${heroImage.data.publicUrl}" alt="Hero Image" class="media-image">
                                     <div class="media-label">Hero Image</div>
                                 </div>
                             ` : ''}
                             
                             ${videoMedia ? `
-                                <div class="media-item">
-                                    <video src="${videoMedia.data.publicUrl}" controls class="media-video"></video>
-                                    <div class="media-label">Video</div>
+                                <div class="media-item" id="video-media">
+                                    <video src="${videoMedia.data.publicUrl}" class="media-video" id="fish-video"></video>
+                                    <div class="media-label">Release Video</div>
+                                    <div class="play-button" id="play-button"></div>
                                 </div>
                             ` : ''}
                         </div>
                         
                         <p class="submission-note">${data.note || 'No notes provided'}</p>
                     </div>
-                `
+                `;
+
+                // Animate media items to appear one after another
+                setTimeout(() => {
+                    const mainImageEl = document.getElementById('main-image');
+                    if (mainImageEl) {
+                        mainImageEl.style.opacity = 1;
+                        mainImageEl.style.transform = 'translateY(0)';
+                    }
+                    
+                    setTimeout(() => {
+                        const heroImageEl = document.getElementById('hero-image');
+                        if (heroImageEl) {
+                            heroImageEl.style.opacity = 1;
+                            heroImageEl.style.transform = 'translateY(0)';
+                        }
+                        
+                        setTimeout(() => {
+                            const videoMediaEl = document.getElementById('video-media');
+                            if (videoMediaEl) {
+                                videoMediaEl.style.opacity = 1;
+                                videoMediaEl.style.transform = 'translateY(0)';
+                                
+                                // Show play button after video element appears
+                                setTimeout(() => {
+                                    const playButton = document.getElementById('play-button');
+                                    if (playButton) {
+                                        playButton.style.opacity = 1;
+                                        
+                                        // Add click event to play the video
+                                        playButton.addEventListener('click', () => {
+                                            const video = document.getElementById('fish-video');
+                                            if (video) {
+                                                video.play();
+                                                playButton.style.opacity = 0;
+                                            }
+                                        });
+                                    }
+                                }, 500);
+                            }
+                        }, 1000); // Third item appears 1s after second
+                    }, 1000); // Second item appears 1s after first
+                }, 500); // First item appears 0.5s after content loads
+
             } catch (error) {
                 console.error('Error fetching submission for presentation:', error.message)
                 document.getElementById('presentation-container').innerHTML = `
@@ -228,12 +357,14 @@
                         <p>Could not load submission for presentation. Please try again later.</p>
                         <a href="submission-detail.html?id=${submissionId}" class="back-button">Back to Details</a>
                     </div>
-                `
+                `;
+                document.getElementById('presentation-container').style.opacity = 1;
+                document.getElementById('splash-screen').style.display = 'none';
             }
         }
 
         // Fetch submission details when the page loads
-        document.addEventListener('DOMContentLoaded', fetchSubmissionPresentation)
+        document.addEventListener('DOMContentLoaded', fetchSubmissionPresentation);
     </script>
 </body>
 </html>
