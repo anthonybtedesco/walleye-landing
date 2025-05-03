@@ -6,13 +6,21 @@
     <title>WalleyeFest - Leaderboards</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --wf-purple: #5D3FD3;
+            --wf-yellow: #FFD700;
+            --wf-blue: #0070c0;
+            --wf-black: #222;
+            --wf-red: #D22B2B;
+        }
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, var(--wf-purple), var(--wf-blue), var(--wf-purple));
             color: #333;
-            background-image: linear-gradient(to bottom, #e6f0fa, #f5f5f5);
+            min-height: 100vh;
         }
         
         .container {
@@ -21,158 +29,195 @@
             padding: 20px;
         }
         
-        .navigation {
-            background: #004080;
-            padding: 15px 0;
+        .page-header {
+            text-align: center;
+            padding: 20px 0;
+            color: white;
             margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
+            position: relative;
         }
         
-        .nav-link {
+        .header-title {
+            font-size: 2.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: var(--wf-yellow);
+        }
+        
+        /* Derby section styling */
+        .derby-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 2px solid var(--wf-black);
+        }
+        
+        .derby-title {
+            background: linear-gradient(135deg, var(--wf-purple), #7B68EE);
             color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 5px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .filters {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .filter-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .filter-group select, .filter-group input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            background: #f8f9fa;
-            transition: all 0.3s;
-            font-size: 0.95em;
-        }
-        
-        .filter-group select:hover, .filter-group input:hover {
-            border-color: #0070c0;
-        }
-        
-        .filter-group select:focus, .filter-group input:focus {
-            border-color: #004080;
-            box-shadow: 0 0 0 3px rgba(0, 64, 128, 0.2);
-            outline: none;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
+            padding: 15px 20px;
+            margin: 0;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.3em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
-        .apply-filter {
-            background-color: #004080;
-            color: white;
+        .derby-title.popular {
+            background: linear-gradient(135deg, var(--wf-red), #FF4500);
         }
         
-        .reset-filter {
-            background-color: #f0f0f0;
-            color: #333;
+        .derby-title::after {
+            content: '▼';
+            font-size: 0.8em;
+            transition: transform 0.3s;
         }
         
-        .apply-filter:hover {
-            background-color: #00305f;
+        .derby-title.collapsed::after {
+            transform: rotate(-90deg);
         }
         
-        .reset-filter:hover {
-            background-color: #e0e0e0;
+        .trophy-icon {
+            display: inline-block;
+            margin-right: 8px;
+            color: var(--wf-yellow);
         }
         
-        /* Leaderboard styling */
+        .derby-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+        }
+        
+        .derby-content.collapsed {
+            max-height: 0;
+            padding: 0 15px;
+        }
+        
+        .derby-content.expanded {
+            max-height: 2000px;
+        }
+        
+        /* Leaderboard card styling */
         .leaderboard {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             position: relative;
-            border: 3px solid transparent;
-            margin-bottom: 20px;
-            min-height: 280px;
-            display: flex;
-            flex-direction: column;
+            transition: transform 0.3s;
+            overflow: hidden;
+            border: 1px solid #ddd;
         }
         
         .leaderboard:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         
         .leaderboard.main-payout {
-            border-color: #1ab64f;
-            box-shadow: 0 4px 12px rgba(26, 182, 79, 0.2);
-            animation: pulse 2s infinite;
+            border: 2px solid #1ab64f;
         }
         
         .leaderboard.non-main-payout {
-            border-color: #1ab64f;
-            box-shadow: 0 4px 12px rgba(26, 182, 79, 0.2);
-            animation: pulse 3s infinite;
+            border: 2px solid #1ab64f;
         }
         
         .payout-badge {
             position: absolute;
-            top: -12px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             background: linear-gradient(135deg, #1ab64f, #0c8a37);
             color: white;
-            padding: 6px 14px;
+            padding: 5px 10px;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 0.8em;
             font-weight: bold;
-            z-index: 2;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            z-index: 1;
         }
         
-        /* Shine effect for payout badges */
+        .leaderboard-header {
+            background: linear-gradient(135deg, var(--wf-blue), #0091EA);
+            color: white;
+            padding: 15px;
+        }
+        
+        .leaderboard-title {
+            margin: 0;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+        }
+        
+        .leaderboard-species {
+            font-style: italic;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .fish-icon {
+            margin-right: 5px;
+            color: var(--wf-yellow);
+        }
+        
+        .leaderboard-body {
+            padding: 15px;
+        }
+        
+        .leaderboard-details {
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        
+        .leaderboard-detail {
+            margin-bottom: 8px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: var(--wf-purple);
+        }
+        
+        .view-button {
+            display: block;
+            background: linear-gradient(135deg, var(--wf-black), #444);
+            color: var(--wf-yellow);
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .view-button:hover {
+            background: linear-gradient(135deg, var(--wf-purple), #7B68EE);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            color: #666;
+        }
+        
+        /* Simple animations */
+        @keyframes shine {
+            0% { background-position: -100px; }
+            100% { background-position: 200px; }
+        }
+        
         .payout-badge::after {
             content: '';
             position: absolute;
@@ -180,331 +225,27 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
             background-size: 200px 100%;
             border-radius: 20px;
             animation: shine 2s infinite linear;
             z-index: -1;
         }
         
-        .leaderboard-header {
-            background: linear-gradient(135deg, #004080, #0070c0);
-            color: white;
-            padding: 15px;
-            position: relative;
-            border-bottom: 2px solid #002040;
-        }
-        
-        .leaderboard-title {
-            margin: 0;
-            font-size: 1.2em;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .leaderboard-species {
-            font-style: italic;
-            margin-top: 5px;
-            opacity: 0.9;
-            display: flex;
-            align-items: center;
-        }
-        
-        .leaderboard-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #ff6b00;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .leaderboard-body {
-            padding: 15px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .leaderboard-detail {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .detail-label {
-            font-weight: bold;
-            width: 100px;
-            color: #004080;
-        }
-        
-        .leaderboard-location {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
-            display: flex;
-            align-items: flex-start;
-        }
-        
-        .leaderboard-action {
-            padding: 10px 15px;
-            text-align: center;
-            border-top: 1px solid #eee;
-            background: #f8f9fa;
-        }
-        
-        .view-button {
-            background: linear-gradient(135deg, #004080, #0070c0);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 0.95em;
-            transition: all 0.3s;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: bold;
-        }
-        
-        .view-button:hover {
-            background: linear-gradient(135deg, #0070c0, #004080);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
-        }
-        
-        .derby-section {
-            margin-bottom: 30px;
-        }
-        
-        .derby-title {
-            color: #004080;
-            font-size: 1.5em;
-            margin: 0 0 15px 0;
-            padding: 15px;
-            background: linear-gradient(135deg, #ffffff, #f0f8ff);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s;
-            border-left: 5px solid #004080;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .derby-title:hover {
-            background: linear-gradient(135deg, #f0f8ff, #ffffff);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        }
-        
-        .derby-title span {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .derby-title .trophy-icon {
-            animation: bounce 2s infinite;
-        }
-        
-        .derby-title.popular {
-            position: relative;
-            overflow: hidden;
-            border-left: 5px solid gold;
-            background: linear-gradient(135deg, #fffcf0, #fff8e0);
-        }
-        
-        .derby-title.popular::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, transparent 0%, rgba(255,215,0,0.2) 50%, transparent 100%);
-            background-size: 200px 100%;
-            animation: shine 3s infinite linear;
-        }
-        
-        .derby-title::after {
-            content: '▼';
-            font-size: 0.8em;
-            transition: transform 0.3s;
-            margin-left: 10px;
-        }
-        
-        .derby-title.collapsed::after {
-            transform: rotate(-90deg);
-        }
-        
-        .derby-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            transition: max-height 0.3s ease-out;
-            overflow: hidden;
-            padding: 10px;
-        }
-        
-        .derby-content.collapsed {
-            max-height: 0;
-        }
-        
-        .derby-content.expanded {
-            max-height: 2000px;
-        }
-        
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            color: #666;
-        }
-        
         @media (max-width: 768px) {
-            .filter-row {
-                flex-direction: column;
-            }
-            
             .derby-content {
                 grid-template-columns: 1fr;
             }
         }
-        
-        /* Additional gamification styles */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes shine {
-            0% { background-position: -100px; }
-            100% { background-position: 200px; }
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .trophy-icon {
-            display: inline-block;
-            margin-right: 5px;
-            color: gold;
-            font-size: 1.1em;
-            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-        }
-        
-        .fish-icon {
-            display: inline-block;
-            margin-right: 5px;
-            color: #0070c0;
-            font-size: 1.1em;
-        }
-        
-        /* Add gamified icons to the filter section */
-        .filter-icon {
-            margin-right: 8px;
-            font-size: 1.2em;
-            vertical-align: middle;
-        }
-        
-        /* Page header with sporty branding */
-        .page-header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
-        .header-title {
-            font-size: 2.5em;
-            color: #004080;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            position: relative;
-            display: inline-block;
-        }
-        
-        .header-title::before, .header-title::after {
-            content: "🏆";
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7em;
-        }
-        
-        .header-title::before {
-            left: -40px;
-        }
-        
-        .header-title::after {
-            right: -40px;
-        }
-        
-        .subheader {
-            font-size: 1.1em;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        /* Stat icons for leaderboards */
-        .stat-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background: rgba(0, 64, 128, 0.1);
-            border-radius: 50%;
-            margin-right: 8px;
-            color: #004080;
-        }
-        
-        /* Water-like background for containers */
-        .water-bg {
-            background: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(225, 240, 255, 0.8));
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 64, 128, 0.1);
-            padding: 10px;
-            margin-bottom: 40px;
-        }
     </style>
 </head>
 <body>
-
-    
     <div class="container">
         <div class="page-header">
-            <h1 class="header-title">WalleyeFest 2025 Leaderboards</h1>
+            <h1 class="header-title">🏆 WalleyeFest Leaderboards 🏆</h1>
         </div>
         
-        <div id="leaderboards-container" class="water-bg">
+        <div id="leaderboards-container">
             <!-- Leaderboards will be inserted here -->
             <div class="no-results">
                 <p>Loading leaderboards...</p>
@@ -576,8 +317,9 @@
                                 </span>
                             `;
                         } else {
-                            
+                            titleElement.innerHTML = `<span>Other Leaderboards</span>`;
                         }
+                        
                         // Create the content container
                         const contentElement = document.createElement('div');
                         contentElement.className = 'derby-content expanded';
@@ -607,13 +349,6 @@
                                 leaderboardElement.innerHTML = `<div class="payout-badge">💰 TOP 2 PAYOUTS</div>`;
                             }
                             
-                            // Get the image URL if media exists
-                            let logoUrl = '';
-                            if (rankboard.media) {
-                                const logoData = supabase.storage.from(rankboard.media.bucket).getPublicUrl(rankboard.media.file_path);
-                                logoUrl = logoData.data.publicUrl;
-                            }
-
                             // Add number to title if it exists
                             const numberPrefix = rankboard.metadata.number ? `${rankboard.metadata.number}. ` : '';
                             
@@ -623,26 +358,13 @@
                                     <div class="leaderboard-species">
                                         <span class="fish-icon">🎣</span>${rankboard.species}
                                     </div>
-                                    ${rankboard.is_main ? '<span class="leaderboard-badge">Main</span>' : ''}
                                 </div>
                                 <div class="leaderboard-body">
                                     <div class="leaderboard-details">
                                         <div class="leaderboard-detail">
-                                            <span class="detail-label"><span class="stat-icon">📊</span>Type:</span>
-                                            <span>${rankboard.type_ || 'Standard'}</span>
-                                        </div>
-                                        <div class="leaderboard-detail">
-                                            <span class="detail-label"><span class="stat-icon">📋</span>Sort by:</span>
-                                            <span>${rankboard.sorter_type || 'Default'}</span>
-                                        </div>
-                                        <div class="leaderboard-location">
-                                            <span class="detail-label"><span class="stat-icon">📍</span>Location:</span> 
-                                            <span>${rankboard.center_lat.toFixed(4)}, ${rankboard.center_long.toFixed(4)} 
-                                            (${rankboard.radius} mi radius)</span>
+                                            <span class="detail-label">Type:</span> ${rankboard.type_ || 'Standard'}
                                         </div>
                                     </div>
-                                </div>
-                                <div class="leaderboard-action">
                                     <a href="leaderboard-detail.html?id=${rankboard.id}" class="view-button">
                                         <span class="trophy-icon">🏆</span> View Rankings
                                     </a>
