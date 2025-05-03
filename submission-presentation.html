@@ -30,16 +30,16 @@
             align-items: center;
             z-index: 100;
             opacity: 1;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 1.5s ease-in-out;
         }
         .splash-logo {
-            max-width: 50%;
-            max-height: 50%;
-            animation: pulse 2s infinite;
+            max-width: 60%;
+            max-height: 60%;
+            animation: pulse 3s infinite;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
         .presentation-container {
@@ -58,7 +58,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             padding: 2rem;
             box-sizing: border-box;
@@ -67,82 +67,99 @@
         }
         .presentation-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 0;
             width: 100%;
             z-index: 10;
+            padding: 1rem 0;
         }
         .fish-type {
             color: #ffffff;
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: bold;
-            margin: 0 0 1rem 0;
+            margin: 0 0 0.5rem 0;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .fish-length {
             color: #64B5F6;
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin: 0.5rem 0;
             font-weight: bold;
         }
         .media-container {
             display: flex;
             gap: 0;
-            margin: 2rem 0;
+            margin: 0;
             justify-content: center;
             width: 100%;
-            height: 60vh;
+            height: 75vh;
             position: relative;
             z-index: 5;
+            background-color: #001020;
         }
         .media-item {
-            flex: 1;
-            max-width: 33.333%;
             position: relative;
             height: 100%;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 1s ease, transform 1s ease;
             overflow: hidden;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            flex: 0 1 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1rem;
+        }
+        .media-item:last-child {
+            border-right: none;
         }
         .media-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            width: auto;
+            object-fit: contain;
             border-radius: 0;
-            aspect-ratio: 2/3;
+            background-color: #001020;
+            display: block;
         }
         .media-video {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            width: auto;
+            object-fit: contain;
             border-radius: 0;
-            object-fit: cover;
+            background-color: #001020;
+            display: block;
         }
         .media-label {
             color: #B3E5FC;
-            font-size: 1rem;
+            font-size: 1.5rem;
             margin-top: 0.5rem;
             position: absolute;
-            bottom: 10px;
+            bottom: 15px;
             left: 0;
             right: 0;
             background: rgba(0,20,40,0.7);
-            padding: 5px 0;
+            padding: 10px 0;
             text-align: center;
+            z-index: 10;
         }
         .play-button {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
+            width: 100px;
+            height: 100px;
             background: rgba(0,0,0,0.5);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 5;
+            z-index: 15;
             opacity: 0;
             transition: opacity 0.5s ease, transform 0.3s ease;
         }
@@ -156,18 +173,19 @@
             width: 0;
             height: 0;
             border-style: solid;
-            border-width: 10px 0 10px 20px;
+            border-width: 20px 0 20px 35px;
             border-color: transparent transparent transparent white;
-            margin-left: 5px;
+            margin-left: 8px;
         }
         .submission-note {
             color: #E1F5FE;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin: 1rem 0;
-            max-width: 80%;
+            max-width: 90%;
             text-align: center;
             line-height: 1.6;
             z-index: 10;
+            padding: 1rem 0;
         }
         .controls {
             position: absolute;
@@ -177,13 +195,14 @@
         }
         .back-button {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 15px 30px;
             background: rgba(255,255,255,0.2);
             color: white;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 8px;
             transition: background-color 0.2s ease;
             backdrop-filter: blur(5px);
+            font-size: 1.4rem;
         }
         .back-button:hover {
             background: rgba(255,255,255,0.3);
@@ -196,7 +215,38 @@
             height: 100vh;
             color: #fff;
             text-align: center;
+            font-size: 2rem;
         }
+        
+        /* Large screen optimizations */
+        @media (min-width: 1920px) {
+            .fish-type {
+                font-size: 5rem;
+            }
+            .fish-length {
+                font-size: 3rem;
+            }
+            .media-label {
+                font-size: 2rem;
+                padding: 15px 0;
+            }
+            .submission-note {
+                font-size: 2.5rem;
+            }
+            .play-button {
+                width: 130px;
+                height: 130px;
+            }
+            .play-button::after {
+                border-width: 25px 0 25px 45px;
+                margin-left: 10px;
+            }
+            .back-button {
+                font-size: 1.8rem;
+                padding: 20px 40px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .fish-type {
                 font-size: 2rem;
@@ -207,17 +257,36 @@
             .media-container {
                 flex-direction: column;
                 align-items: center;
-                gap: 0;
+                gap: 1px;
                 height: auto;
+                padding: 1px;
             }
             .media-item {
-                max-width: 100%;
-                height: 450px;
+                width: auto;
+                height: 300px;
+                margin-bottom: 1px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .media-item:last-child {
+                border-bottom: none;
                 margin-bottom: 0;
+            }
+            .media-label {
+                font-size: 1rem;
+                padding: 5px 0;
             }
             .submission-note {
                 font-size: 1.2rem;
                 max-width: 95%;
+            }
+            .play-button {
+                width: 60px;
+                height: 60px;
+            }
+            .play-button::after {
+                border-width: 10px 0 10px 20px;
+                margin-left: 5px;
             }
         }
     </style>
@@ -248,9 +317,9 @@
             
             setTimeout(() => {
                 document.getElementById('splash-screen').style.display = 'none';
-            }, 1000);
+            }, 1500);
             
-        }, 3000); // Show splash for 3 seconds
+        }, 4000); // Show splash for 4 seconds on large screen
 
         async function fetchSubmissionPresentation() {
             try {
@@ -298,7 +367,6 @@
                                 <div class="media-item" id="video-media">
                                     <video src="${videoMedia.data.publicUrl}" class="media-video" id="fish-video"></video>
                                     <div class="media-label">Release Video</div>
-                                    <div class="play-button" id="play-button"></div>
                                 </div>
                             ` : ''}
                         </div>
@@ -307,7 +375,8 @@
                     </div>
                 `;
 
-                // Animate media items to appear one after another
+                // Sequential animation - bump → hero → release autoplay
+                // First show the main image (bump)
                 setTimeout(() => {
                     const mainImageEl = document.getElementById('main-image');
                     if (mainImageEl) {
@@ -315,6 +384,7 @@
                         mainImageEl.style.transform = 'translateY(0)';
                     }
                     
+                    // After 2 seconds, show the hero image
                     setTimeout(() => {
                         const heroImageEl = document.getElementById('hero-image');
                         if (heroImageEl) {
@@ -322,32 +392,48 @@
                             heroImageEl.style.transform = 'translateY(0)';
                         }
                         
+                        // After another 2 seconds, show the video and autoplay it
                         setTimeout(() => {
                             const videoMediaEl = document.getElementById('video-media');
-                            if (videoMediaEl) {
+                            const videoEl = document.getElementById('fish-video');
+                            
+                            if (videoMediaEl && videoEl) {
                                 videoMediaEl.style.opacity = 1;
                                 videoMediaEl.style.transform = 'translateY(0)';
                                 
-                                // Show play button after video element appears
+                                // Wait a short moment for the animation to complete, then play
                                 setTimeout(() => {
-                                    const playButton = document.getElementById('play-button');
-                                    if (playButton) {
-                                        playButton.style.opacity = 1;
-                                        
-                                        // Add click event to play the video
-                                        playButton.addEventListener('click', () => {
-                                            const video = document.getElementById('fish-video');
-                                            if (video) {
-                                                video.play();
-                                                playButton.style.opacity = 0;
-                                            }
+                                    // Set video to loop, muted initially to allow autoplay
+                                    videoEl.loop = true;
+                                    videoEl.muted = true;
+                                    videoEl.play()
+                                        .then(() => {
+                                            console.log('Video playing automatically');
+                                            // Unmute after playback starts if desired
+                                            setTimeout(() => {
+                                                videoEl.muted = false;
+                                            }, 500);
+                                        })
+                                        .catch(err => {
+                                            console.error('Autoplay failed:', err);
+                                            // Create a play button as fallback if autoplay fails
+                                            const playButtonDiv = document.createElement('div');
+                                            playButtonDiv.className = 'play-button';
+                                            playButtonDiv.id = 'play-button';
+                                            playButtonDiv.style.opacity = 1;
+                                            videoMediaEl.appendChild(playButtonDiv);
+                                            
+                                            playButtonDiv.addEventListener('click', () => {
+                                                videoEl.muted = false;
+                                                videoEl.play();
+                                                playButtonDiv.style.opacity = 0;
+                                            });
                                         });
-                                    }
                                 }, 500);
                             }
-                        }, 1000); // Third item appears 1s after second
-                    }, 1000); // Second item appears 1s after first
-                }, 500); // First item appears 0.5s after content loads
+                        }, 2000);
+                    }, 2000);
+                }, 800);
 
             } catch (error) {
                 console.error('Error fetching submission for presentation:', error.message)
