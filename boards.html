@@ -12,13 +12,21 @@
             --wf-blue: #0070c0;
             --wf-black: #222;
             --wf-red: #D22B2B;
+            
+            /* Simplified color scheme */
+            --primary: var(--wf-blue);
+            --secondary: var(--wf-purple);
+            --accent: var(--wf-yellow);
+            --accent-red: var(--wf-red);
+            --dark: var(--wf-black);
+            --light: #ffffff;
         }
         
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, var(--wf-purple), var(--wf-blue), var(--wf-purple));
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--primary));
             color: #333;
             min-height: 100vh;
             overflow-x: hidden;
@@ -45,7 +53,7 @@
             letter-spacing: 1px;
             margin: 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            color: var(--wf-yellow);
+            color: var(--accent);
         }
         
         /* Derby section styling */
@@ -59,7 +67,7 @@
         }
         
         .derby-title {
-            background: linear-gradient(135deg, var(--wf-purple), #7B68EE);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 15px 20px;
             margin: 0;
@@ -72,7 +80,7 @@
         }
         
         .derby-title.popular {
-            background: linear-gradient(135deg, var(--wf-red), #FF4500);
+            background: linear-gradient(135deg, var(--accent-red), #FF6347);
         }
         
         .derby-title::after {
@@ -88,7 +96,7 @@
         .trophy-icon {
             display: inline-block;
             margin-right: 8px;
-            color: var(--wf-yellow);
+            color: var(--accent);
         }
         
         .derby-content {
@@ -169,7 +177,7 @@
         }
         
         .leaderboard-header {
-            background: linear-gradient(135deg, var(--wf-blue), #0091EA);
+            background: linear-gradient(135deg, var(--primary), #0091EA);
             color: white;
             padding: 20px 15px;
             text-align: center;
@@ -213,7 +221,7 @@
         
         .fish-icon {
             margin-right: 5px;
-            color: var(--wf-yellow);
+            color: var(--accent);
             font-size: 1.2em;
         }
         
@@ -260,7 +268,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--wf-purple);
+            background: var(--primary);
             color: white;
             padding: 8px 15px;
             border-radius: 30px;
@@ -270,7 +278,7 @@
         
         .detail-label {
             font-weight: bold;
-            color: var(--wf-yellow);
+            color: var(--accent);
             margin-right: 5px;
         }
         
@@ -283,7 +291,7 @@
         
         .top-rankings h4 {
             text-align: center;
-            color: var(--wf-purple);
+            color: var(--secondary);
             margin-bottom: 15px;
             font-size: 1.2em;
             position: relative;
@@ -297,7 +305,7 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--wf-yellow);
+            color: var(--accent);
             font-size: 1.5em;
         }
         
@@ -318,23 +326,23 @@
         }
         
         .top-rankings-table th {
-            background: rgba(93, 63, 211, 0.1);
+            background: rgba(0, 112, 192, 0.1);
             padding: 10px 6px;
             text-align: center;
-            color: var(--wf-purple);
+            color: var(--primary);
             font-weight: bold;
-            border-top: 1px solid rgba(93, 63, 211, 0.2);
-            border-bottom: 1px solid rgba(93, 63, 211, 0.2);
+            border-top: 1px solid rgba(0, 112, 192, 0.2);
+            border-bottom: 1px solid rgba(0, 112, 192, 0.2);
         }
         
         .top-rankings-table th:first-child {
             border-radius: 8px 0 0 8px;
-            border-left: 1px solid rgba(93, 63, 211, 0.2);
+            border-left: 1px solid rgba(0, 112, 192, 0.2);
         }
         
         .top-rankings-table th:last-child {
             border-radius: 0 8px 8px 0;
-            border-right: 1px solid rgba(93, 63, 211, 0.2);
+            border-right: 1px solid rgba(0, 112, 192, 0.2);
         }
         
         .top-rankings-table td {
@@ -404,7 +412,7 @@
         .rank-length {
             font-weight: bold;
             text-align: center;
-            color: var(--wf-blue);
+            color: var(--primary);
         }
         
         .main-board-grid {
@@ -424,8 +432,8 @@
         
         .view-button {
             display: block;
-            background: linear-gradient(135deg, var(--wf-black), #444);
-            color: var(--wf-yellow);
+            background: linear-gradient(135deg, var(--dark), #444);
+            color: var(--accent);
             padding: 12px;
             text-align: center;
             text-decoration: none;
@@ -454,7 +462,7 @@
         }
         
         .view-button:hover {
-            background: linear-gradient(135deg, var(--wf-purple), #7B68EE);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.25);
         }
@@ -490,7 +498,7 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 15px;
-            background: var(--wf-purple);
+            background: var(--secondary);
             opacity: 0.8;
             display: flex;
             align-items: center;
@@ -546,24 +554,200 @@
             z-index: -1;
         }
         
-        /* For mobile */
+        /* Mobile Optimization */
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                max-width: 100%;
+            }
+            
+            .header-title {
+                font-size: 1.8em;
+            }
+            
             .derby-content {
                 grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 12px;
+            }
+            
+            .leaderboard {
+                margin-bottom: 0;
+                transform: none !important;
+            }
+            
+            .leaderboard-header {
+                padding: 15px 10px;
+            }
+            
+            .leaderboard-title {
+                font-size: 1.1em;
+            }
+            
+            .leaderboard.main-payout .leaderboard-title {
+                font-size: 1.3em;
+            }
+            
+            .leaderboard-species {
+                font-size: 0.95em;
+            }
+            
+            .leaderboard-stats {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .leaderboard-body {
+                padding: 15px 10px;
             }
             
             .main-board-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .main-board-img {
+                height: 120px;
+                font-size: 1.5em;
             }
             
             .main-board-ranks {
                 grid-template-columns: 1fr;
-                max-height: 300px;
+                max-height: 350px;
+                -webkit-overflow-scrolling: touch;
             }
             
-            /* Improve touch scrolling on mobile */
+            .leaderboard-details {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .leaderboard-detail {
+                width: 85%;
+                margin: 0 auto;
+                padding: 6px 12px;
+            }
+            
+            .top-rankings {
+                max-width: 100%;
+            }
+            
+            .top-rankings-table {
+                font-size: 0.85em;
+            }
+            
+            .view-button {
+                padding: 10px;
+                font-size: 0.9em;
+                margin-top: 15px;
+            }
+            
+            /* Touch-friendly elements */
+            .derby-title {
+                padding: 15px;
+                font-size: 1.2em;
+            }
+            
+            .top-rankings-table td, 
+            .top-rankings-table th {
+                padding: 8px 4px;
+            }
+            
+            .payout-badge {
+                padding: 5px 10px;
+                font-size: 0.8em;
+                right: 5px;
+                top: 5px;
+            }
+            
+            /* Add swipe indicator for horizontal scrolling */
+            .swipe-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--primary);
+                font-size: 0.8em;
+                margin: 10px 0;
+                opacity: 0.8;
+            }
+            
+            .swipe-indicator::before,
+            .swipe-indicator::after {
+                content: '«';
+                margin: 0 5px;
+                animation: pulse-horizontal 1.5s infinite;
+            }
+            
+            .swipe-indicator::after {
+                content: '»';
+            }
+            
+            @keyframes pulse-horizontal {
+                0% { transform: translateX(0); }
+                50% { transform: translateX(3px); }
+                100% { transform: translateX(0); }
+            }
+            
+            /* Enhance scrolling experience */
             .main-board-ranks {
-                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+                scrollbar-color: var(--primary) transparent;
+            }
+            
+            .main-board-ranks::-webkit-scrollbar {
+                width: 5px;
+            }
+            
+            .main-board-ranks::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            
+            .main-board-ranks::-webkit-scrollbar-thumb {
+                background-color: var(--primary);
+                border-radius: 10px;
+            }
+        }
+        
+        /* Small phones */
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+            
+            .derby-title {
+                font-size: 1.1em;
+                padding: 12px 10px;
+            }
+            
+            .leaderboard-title {
+                font-size: 1em;
+            }
+            
+            .leaderboard.main-payout .leaderboard-title {
+                font-size: 1.2em;
+            }
+            
+            .leaderboard-species {
+                font-size: 0.9em;
+            }
+            
+            .leaderboard-detail {
+                width: 95%;
+                font-size: 0.8em;
+            }
+            
+            .view-button {
+                font-size: 0.85em;
+                padding: 8px;
+            }
+            
+            .top-rankings h4 {
+                font-size: 1.1em;
+            }
+            
+            .main-board-img {
+                height: 100px;
             }
         }
     </style>
@@ -588,7 +772,32 @@
         document.addEventListener('DOMContentLoaded', () => {
             const leaderboardsContainer = document.getElementById('leaderboards-container');
             
-            // Display the rankboards (this uses the fetchEvents function which fetches rankboard data)
+            // Check if mobile view
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+            
+            // Add swipe indicators for mobile
+            function addSwipeIndicators() {
+                if (isMobile()) {
+                    const rankContainers = document.querySelectorAll('.main-board-ranks');
+                    rankContainers.forEach(container => {
+                        if (!container.querySelector('.swipe-indicator')) {
+                            const indicator = document.createElement('div');
+                            indicator.className = 'swipe-indicator';
+                            indicator.textContent = 'Scroll to see more';
+                            container.prepend(indicator);
+                        }
+                    });
+                }
+            }
+            
+            // Adjust layout on window resize
+            window.addEventListener('resize', function() {
+                addSwipeIndicators();
+            });
+            
+            // Display the rankboards
             async function displayRankboards() {
                 try {
                     // First, fetch the data using the existing function
@@ -618,6 +827,11 @@
                     
                     // Process each derby group
                     Object.entries(groupedByDerby).forEach(([derbyId, rankboards]) => {
+                        // Skip the "no_derby" group
+                        if (derbyId === 'no_derby') {
+                            return;
+                        }
+                        
                         // Sort rankboards within each derby by metadata.number if it exists
                         rankboards.sort((a, b) => {
                             const numA = a.metadata?.number || 0;
@@ -625,7 +839,7 @@
                             return numA - numB;
                         });
                         
-                        // Create a derby section if it's a valid derby
+                        // Create a derby section
                         const derbySectionElement = document.createElement('div');
                         derbySectionElement.className = 'derby-section';
                         
@@ -633,21 +847,17 @@
                         const titleElement = document.createElement('h2');
                         titleElement.className = 'derby-title';
                         
-                        if (derbyId !== 'no_derby') {
-                            // Add 'popular' class to first derby
-                            if (rankboards[0].derby?.id === Array.from(derbySet)[0]) {
-                                titleElement.classList.add('popular');
-                            }
-                            
-                            titleElement.innerHTML = `
-                                <span>
-                                    <span class="trophy-icon">🏆</span>
-                                    ${rankboards[0].derby?.name || 'Derby Event'}
-                                </span>
-                            `;
-                        } else {
-                            titleElement.innerHTML = `<span>Other Leaderboards</span>`;
+                        // Add 'popular' class to first derby
+                        if (rankboards[0].derby?.id === Array.from(derbySet)[0]) {
+                            titleElement.classList.add('popular');
                         }
+                        
+                        titleElement.innerHTML = `
+                            <span>
+                                <span class="trophy-icon">🏆</span>
+                                ${rankboards[0].derby?.name || 'Derby Event'}
+                            </span>
+                        `;
                         
                         // Create the content container
                         const contentElement = document.createElement('div');
@@ -714,6 +924,7 @@
                                                 </div>
                                             </div>
                                             <div class="main-board-ranks">
+                                                ${isMobile() ? '<div class="swipe-indicator">Scroll to see more</div>' : ''}
                                                 <div id="top-rankings-${rankboard.id}" class="top-rankings">
                                                     <h4>Top Anglers</h4>
                                                     <div class="loading-rankings">Loading rankings...</div>
@@ -776,6 +987,18 @@
                         derbySectionElement.appendChild(contentElement);
                         leaderboardsContainer.appendChild(derbySectionElement);
                     });
+                    
+                    // If there are no leaderboards to display
+                    if (leaderboardsContainer.children.length === 0) {
+                        leaderboardsContainer.innerHTML = `
+                            <div class="no-results">
+                                <p>No leaderboards available at this time.</p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Add swipe indicators after content is loaded
+                    addSwipeIndicators();
                     
                 } catch (error) {
                     console.error('Error loading rankboards:', error);
