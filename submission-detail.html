@@ -203,7 +203,6 @@
                     
                     <p class="submission-note">${data.note || 'No notes provided'}</p>
                     <div class="button-container">
-                        <a href="submission.html" class="back-button">Back to Submissions</a>
                         <a href="boards.html" class="back-button">Back to Boards</a>
                         <a href="submission-presentation.html?id=${data.id}" class="presentation-button">View Presentation</a>
                     </div>
@@ -213,7 +212,6 @@
                 document.getElementById('submission-detail').innerHTML = `
                     <h1>Error</h1>
                     <p>Could not load submission details. Please try again later.</p>
-                    <a href="submission.html" class="back-button">Back to Submissions</a>
                 `
             }
         }
