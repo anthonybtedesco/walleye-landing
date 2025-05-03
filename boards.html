@@ -7,26 +7,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --wf-purple: #5D3FD3;
-            --wf-yellow: #FFD700;
             --wf-blue: #0070c0;
+            --wf-dark-blue: #005694;
+            --wf-accent: #FFD700;
             --wf-black: #222;
-            --wf-red: #D22B2B;
+            --wf-gray: #888;
             
             /* Simplified color scheme */
             --primary: var(--wf-blue);
-            --secondary: var(--wf-purple);
-            --accent: var(--wf-yellow);
-            --accent-red: var(--wf-red);
+            --secondary: var(--wf-dark-blue);
+            --accent: var(--wf-accent);
             --dark: var(--wf-black);
             --light: #ffffff;
+            --success: #1ab64f;
         }
         
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--primary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #333;
             min-height: 100vh;
             overflow-x: hidden;
@@ -67,7 +67,7 @@
         }
         
         .derby-title {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--primary);
             color: white;
             padding: 15px 20px;
             margin: 0;
@@ -80,7 +80,7 @@
         }
         
         .derby-title.popular {
-            background: linear-gradient(135deg, var(--accent-red), #FF6347);
+            background: var(--secondary);
         }
         
         .derby-title::after {
@@ -139,19 +139,19 @@
         }
         
         .leaderboard.main-payout {
-            border: 3px solid #1ab64f;
+            border: 3px solid var(--success);
             grid-column: 1 / -1;
         }
         
         .leaderboard.non-main-payout {
-            border: 3px solid #1ab64f;
+            border: 3px solid var(--success);
         }
         
         .payout-badge {
             position: absolute;
             top: 35px;
             right: 10px;
-            background: linear-gradient(135deg, #1ab64f, #0c8a37);
+            background: var(--success);
             color: white;
             padding: 6px 14px;
             border-radius: 20px;
@@ -169,7 +169,7 @@
             left: -3px;
             right: -3px;
             bottom: -3px;
-            background: linear-gradient(135deg, #1ab64f, #0c8a37);
+            background: var(--success);
             border-radius: 23px;
             z-index: -2;
             opacity: 0.3;
@@ -177,7 +177,7 @@
         }
         
         .leaderboard-header {
-            background: linear-gradient(135deg, var(--primary), #0091EA);
+            background: var(--primary);
             color: white;
             padding: 12px 15px;
             text-align: center;
@@ -282,7 +282,7 @@
         
         .top-rankings h4 {
             text-align: center;
-            color: var(--secondary);
+            color: var(--primary);
             margin-bottom: 15px;
             font-size: 1.2em;
             position: relative;
@@ -423,7 +423,7 @@
         
         .view-button {
             display: block;
-            background: linear-gradient(135deg, var(--dark), #444);
+            background: var(--dark);
             color: var(--accent);
             padding: 12px;
             text-align: center;
@@ -453,7 +453,7 @@
         }
         
         .view-button:hover {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--primary);
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.25);
         }
@@ -755,7 +755,7 @@
         
         .ghost-name {
             font-style: italic;
-            color: #888;
+            color: var(--wf-gray);
             background: rgba(0,0,0,0.05);
             padding: 2px 6px;
             border-radius: 12px;
