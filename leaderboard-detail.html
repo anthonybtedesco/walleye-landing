@@ -1065,14 +1065,19 @@
                             else if (index === 1) medalIcon = '<span class="medal-icon">🥈</span> ';
                             else if (index === 2) medalIcon = '<span class="medal-icon">🥉</span> ';
                             
-                            // Always display a ghost name instead of real username
-                            // Generate a random ghost name based on submission id to keep it consistent
-                            const ghostId = submission.id.substring(0, 4);
-                            const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
-                            const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
-                            const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
-                            
-                            const usernameDisplay = `<span class="ghost-name">👻 ${ghostName}</span>`;
+                            // Use ghost_name from profile if available, otherwise generate one or display ANONYMOUS
+                            let usernameDisplay = '';
+                            if (submission.profile && submission.profile.ghost_name) {
+                                usernameDisplay = `<span class="ghost-name">👻 ${submission.profile.ghost_name}</span>`;
+                            } else {
+                                // Generate a random ghost name based on submission id to keep it consistent
+                                const ghostId = submission.id.substring(0, 4);
+                                const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
+                                const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
+                                const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
+                                
+                                usernameDisplay = `<span class="ghost-name">👻 ${ghostName}</span>`;
+                            }
                             
                             return `
                                 <tr>

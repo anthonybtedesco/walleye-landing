@@ -11,6 +11,7 @@ export interface Profile {
   is_youth: boolean;
   parent_profile_id: UUID | null;
   push_token: string | null;
+  ghost_name: string | null;
 }
 
 export interface ProfileCreate {
@@ -19,11 +20,13 @@ export interface ProfileCreate {
   profile_photo_media_id?: UUID;
   is_youth?: boolean;
   parent_profile_id?: UUID;
+  ghost_name?: string;
 }
 
 export interface ProfileUpdate {
   username?: string | null;
   profile_photo_media_id?: UUID | null;
+  ghost_name?: string | null;
 }
 
 export interface Post {
