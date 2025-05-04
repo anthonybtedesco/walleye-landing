@@ -342,7 +342,30 @@
             border-radius: 8px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        
+        .rankings-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .view-podium-link {
+            color: white; 
+            text-decoration: none; 
+            background: rgba(255,255,255,0.2); 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 0.8em; 
+            display: inline-flex; 
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        
+        .view-podium-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
         
         .rankings-table {
@@ -359,6 +382,7 @@
         .rankings-table th, .rankings-table td {
             padding: 8px 12px;
             text-align: left;
+            font-size: 1.1em;
         }
         
         .rankings-table th {
@@ -392,7 +416,7 @@
             color: var(--primary);
             text-align: center;
             width: 40px;
-            font-size: 1.1em;
+            font-size: 1.3em;
         }
         
         /* Top 3 ranks styling */
@@ -451,11 +475,12 @@
             font-weight: bold;
             display: flex;
             align-items: center;
+            font-size: 1.1em;
         }
         
         .submission-details {
             color: #666;
-            font-size: 0.9em;
+            font-size: 1em;
         }
         
         .submission-link {
@@ -773,6 +798,7 @@
             display: inline-flex;
             align-items: center;
             animation: ghost-fade 3s infinite ease-in-out;
+            font-size: 1.05em;
         }
         
         @keyframes ghost-fade {
@@ -795,7 +821,14 @@
             </div>
         </div>
         
-        <h2 class="rankings-header"><span class="trophy-icon">🏆</span>Leaderboard Rankings</h2>
+        <h2 class="rankings-header">
+            <div class="rankings-title">
+                <span class="trophy-icon">🏆</span>Leaderboard Rankings
+            </div>
+            <a href="#" id="view-podium" class="view-podium-link">
+                <span style="margin-right: 5px;">🏆</span> View Podium
+            </a>
+        </h2>
         
         <div id="rankings-container">
             <!-- Rankings will be inserted here -->
@@ -1227,6 +1260,12 @@
         
         // Fetch data when the page loads
         document.addEventListener('DOMContentLoaded', () => {
+            // Set up link to podium view
+            const podiumLink = document.getElementById('view-podium');
+            if (podiumLink) {
+                podiumLink.href = `podium.html?id=${leaderboardId}`;
+            }
+            
             fetchLeaderboardData()
             
             // Handle window resize

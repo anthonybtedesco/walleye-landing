@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WalleyeFest - Podium View</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --wf-purple: #5D3FD3;
+            --wf-yellow: #FFD700;
+            --wf-blue: #0070c0;
+            --wf-black: #222;
+            --wf-red: #D22B2B;
+            
+            --primary: var(--wf-blue);
+            --secondary: var(--wf-purple);
+            --accent: var(--wf-yellow);
+            --accent-red: var(--wf-red);
+            --dark: var(--wf-black);
+            --light: #ffffff;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, rgba(0, 112, 192, 0.8), rgba(93, 63, 211, 0.8));
+            color: #333;
+            min-height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .trophy-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 20px;
+            perspective: 1000px;
+            transition: all 0.5s ease-in-out;
+            overflow-y: auto;
+            min-height: calc(100vh - 100px);
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 3px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .toggle-label {
+            margin-right: 10px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toggle-btn {
+            padding: 6px 15px;
+            margin: 0 2px;
+            background: transparent;
+            border: none;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .toggle-btn.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .toggle-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .leaderboard-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.2s;
+        }
+        
+        .back-link:before {
+            content: "←";
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .trophy-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            margin: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            width: 400px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .trophy-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .trophy-card.place-1 {
+            border-bottom: 6px solid gold;
+        }
+        
+        .trophy-card.place-2 {
+            border-bottom: 6px solid silver;
+        }
+        
+        .trophy-card.place-3 {
+            border-bottom: 6px solid #cd7f32;
+        }
+        
+        .single-view .trophy-card {
+            width: 400px;
+            height: auto;
+        }
+        
+        .place-badge {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 15px 0;
+            color: #444;
+        }
+        
+        .trophy-card.place-1 .place-badge {
+            color: #FFC107;
+        }
+        
+        .trophy-card.place-2 .place-badge {
+            color: #9E9E9E;
+        }
+        
+        .trophy-card.place-3 .place-badge {
+            color: #CD7F32;
+        }
+        
+        .trophy-image {
+            width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .trophy-icon {
+            font-size: 4rem;
+            margin: 5px 0 15px;
+        }
+        
+        .trophy-card.place-1 .trophy-icon {
+            color: #FFC107;
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        }
+        
+        .trophy-card.place-2 .trophy-icon {
+            color: #9E9E9E;
+        }
+        
+        .trophy-card.place-3 .trophy-icon {
+            color: #CD7F32;
+        }
+        
+        .angler-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin: 10px 0;
+        }
+        
+        .ghost-name {
+            font-style: normal;
+            color: #555;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .fish-length {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #D32F2F;
+            margin-top: 5px;
+        }
+        
+        .navigation-overlay {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 50px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .nav-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .placeholder-text {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            margin: 100px auto;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px 40px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .trophy-display.single-view {
+            justify-content: center;
+        }
+        
+        .trophy-display.triple-view {
+            justify-content: center;
+        }
+        
+        .triple-view .trophy-card.place-1 {
+            z-index: 3;
+            transform: translateY(-20px) scale(1.1);
+        }
+        
+        .triple-view .trophy-card.place-2 {
+            z-index: 2;
+            transform: translateX(-40px) translateY(20px) scale(0.9);
+        }
+        
+        .triple-view .trophy-card.place-3 {
+            z-index: 1;
+            transform: translateX(40px) translateY(20px) scale(0.9);
+        }
+        
+        .triple-view .trophy-card.place-1:hover,
+        .triple-view .trophy-card.place-2:hover,
+        .triple-view .trophy-card.place-3:hover {
+            transform: translateY(-30px) scale(1.15);
+            z-index: 10;
+        }
+        
+        @media (max-width: 1200px) {
+            .single-view .trophy-card,
+            .triple-view .place-1,
+            .triple-view .place-2,
+            .triple-view .place-3 {
+                width: 40vw;
+                height: 70vh;
+            }
+            
+            .five-view .trophy-card {
+                width: 28vw;
+                height: 60vh;
+            }
+            
+            .ten-view .trophy-card {
+                width: 25vw;
+                height: 40vh;
+            }
+            
+            .all-view .trophy-card {
+                width: 22vw;
+                height: 35vh;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .trophy-display {
+                padding: 10px;
+                overflow-y: auto;
+            }
+            
+            .single-view .trophy-card,
+            .triple-view .place-1,
+            .triple-view .place-2,
+            .triple-view .place-3 {
+                width: 80vw;
+                height: 60vh;
+            }
+            
+            .five-view .trophy-card {
+                width: 45vw;
+                height: 50vh;
+            }
+            
+            .ten-view .trophy-card,
+            .all-view .trophy-card {
+                width: 45vw;
+                height: 45vh;
+            }
+            
+            .triple-view .trophy-card.place-1,
+            .triple-view .trophy-card.place-2,
+            .triple-view .trophy-card.place-3 {
+                transform: none;
+                margin: 10px;
+            }
+            
+            .triple-view .trophy-card.place-1:hover,
+            .triple-view .trophy-card.place-2:hover,
+            .triple-view .trophy-card.place-3:hover {
+                transform: translateY(-10px);
+            }
+            
+            .trophy-display.triple-view {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        /* Keyframe animations for trophy cards */
+        @keyframes trophy-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .trophy-card.place-1 {
+            animation: none;
+        }
+        
+        /* Additional styles for consistent sizing */
+        .single-view, .triple-view, .five-view, .ten-view, .all-view {
+            min-height: calc(100vh - 100px);
+            align-items: flex-start;
+            padding-top: 50px;
+        }
+        
+        /* Override any transform behavior on hover */
+        .trophy-card:hover,
+        .triple-view .trophy-card.place-1:hover,
+        .triple-view .trophy-card.place-2:hover,
+        .triple-view .trophy-card.place-3:hover {
+            transform: none;
+        }
+        
+        /* Make consistent sizing for all views */
+        .single-view .trophy-card,
+        .triple-view .trophy-card,
+        .five-view .trophy-card,
+        .ten-view .trophy-card,
+        .all-view .trophy-card {
+            width: 400px;
+            height: auto;
+            margin: 20px;
+            transform: none;
+        }
+        
+        /* Override triple view positioning */
+        .triple-view .trophy-card.place-1,
+        .triple-view .trophy-card.place-2,
+        .triple-view .trophy-card.place-3 {
+            transform: none;
+            z-index: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="back-link" id="back-btn">Back to Leaderboard</a>
+        
+        <h1 class="leaderboard-title" id="leaderboard-title">Loading...</h1>
+        
+        <div class="toggle-container">
+            <span class="toggle-label">View:</span>
+            <button class="toggle-btn" data-view="1">1</button>
+            <button class="toggle-btn active" data-view="3">3</button>
+            <button class="toggle-btn" data-view="5">5</button>
+            <button class="toggle-btn" data-view="10">10</button>
+            <button class="toggle-btn" data-view="25">All</button>
+        </div>
+    </div>
+    
+    <div class="trophy-display triple-view" id="trophy-display">
+        <div class="placeholder-text">Loading trophies...</div>
+    </div>
+    
+    <div class="navigation-overlay">
+        <button class="nav-button" id="prev-btn">←</button>
+        <button class="nav-button" id="next-btn">→</button>
+    </div>
+    
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://tdecpfvclvqcqjfyxgnn.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkZWNwZnZjbHZxY3FqZnl4Z25uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkyNTgsImV4cCI6MjA1ODIzNTI1OH0.EkTjt4HtcQN5qX--PBBPgB8dO49mfIjpJHp_vkFV0-U'
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+        
+        // Get leaderboard ID from URL
+        const urlParams = new URLSearchParams(window.location.search)
+        const leaderboardId = urlParams.get('id')
+        
+        // Store data for display
+        let rankboardData = null
+        let submissionsData = []
+        let currentView = '1' // Start with single view
+        let currentPosition = 0
+        
+        // DOM elements
+        const trophyDisplay = document.getElementById('trophy-display')
+        const leaderboardTitle = document.getElementById('leaderboard-title')
+        const backBtn = document.getElementById('back-btn')
+        const prevBtn = document.getElementById('prev-btn')
+        const nextBtn = document.getElementById('next-btn')
+        const toggleBtns = document.querySelectorAll('.toggle-btn')
+        
+        // Set up event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Back button functionality
+            backBtn.addEventListener('click', function(e) {
+                e.preventDefault()
+                window.location.href = `leaderboard-detail.html?id=${leaderboardId}`
+            })
+            
+            // View toggle buttons
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toggleBtns.forEach(b => b.classList.remove('active'))
+                    this.classList.add('active')
+                    
+                    currentView = this.dataset.view
+                    currentPosition = 0 // Reset position when changing view
+                    updateTrophyDisplay()
+                })
+            })
+            
+            // Set the default active button to '1'
+            toggleBtns.forEach(btn => {
+                if (btn.dataset.view === '1') {
+                    btn.classList.add('active')
+                } else {
+                    btn.classList.remove('active')
+                }
+            })
+            
+            // Navigation buttons
+            prevBtn.addEventListener('click', navigatePrev)
+            nextBtn.addEventListener('click', navigateNext)
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    navigatePrev()
+                } else if (e.key === 'ArrowRight') {
+                    navigateNext()
+                }
+            })
+            
+            // Fetch data
+            fetchLeaderboardData()
+        })
+        
+        // Navigate to previous trophy
+        function navigatePrev() {
+            if (currentView === '1') {
+                // In single view, move to the previous submission
+                if (currentPosition > 0) {
+                    currentPosition--
+                    updateTrophyDisplay()
+                }
+            } else {
+                const maxVisible = getMaxVisibleCards()
+                if (currentPosition > 0) {
+                    currentPosition--
+                    updateTrophyDisplay()
+                }
+            }
+        }
+        
+        // Navigate to next trophy
+        function navigateNext() {
+            if (currentView === '1') {
+                // In single view, move to the next submission
+                if (currentPosition < submissionsData.length - 1) {
+                    currentPosition++
+                    updateTrophyDisplay()
+                }
+            } else {
+                const maxVisible = getMaxVisibleCards()
+                if (currentPosition + maxVisible < submissionsData.length) {
+                    currentPosition++
+                    updateTrophyDisplay()
+                }
+            }
+        }
+        
+        // Get max number of visible cards based on current view
+        function getMaxVisibleCards() {
+            if (currentView === '1') return 1
+            if (currentView === '3') return 3
+            if (currentView === '5') return 5
+            if (currentView === '10') return 10
+            return 25 // 'All' view
+        }
+        
+        // Update navigation buttons
+        function updateNavigationButtons() {
+            const maxVisible = getMaxVisibleCards()
+            
+            // Update prev button
+            prevBtn.disabled = currentPosition === 0
+            
+            // Update next button
+            nextBtn.disabled = currentPosition + maxVisible >= submissionsData.length
+        }
+        
+        // Fetch leaderboard data
+        async function fetchLeaderboardData() {
+            try {
+                if (!leaderboardId) {
+                    trophyDisplay.innerHTML = `<div class="placeholder-text">No leaderboard specified</div>`
+                    return
+                }
+                
+                const { data, error } = await supabase
+                    .from('rankboard')
+                    .select('*, media:logo_media_id(*), derby:derby_id(*, product:product_id(*)), product:product_id(*)')
+                    .eq('id', leaderboardId)
+                    .single()
+                
+                if (error) throw error
+                
+                rankboardData = data
+                console.log('Rankboard data:', data)
+                
+                // Update the page title and header
+                document.title = `WalleyeFest - ${data.metadata?.name || 'Podium'}`
+                leaderboardTitle.textContent = data.metadata?.name || 'Leaderboard Podium'
+                
+                // Set the back button link
+                backBtn.href = `leaderboard-detail.html?id=${leaderboardId}`
+                
+                // Fetch submissions for this rankboard
+                fetchLeaderboardSubmissions(data.id)
+                
+            } catch (error) {
+                console.error('Error fetching leaderboard data:', error.message)
+                trophyDisplay.innerHTML = `<div class="placeholder-text">Error loading leaderboard: ${error.message}</div>`
+            }
+        }
+        
+        // Fetch submissions for the leaderboard using rankboard_rankings
+        async function fetchLeaderboardSubmissions(rankboardId) {
+            try {
+                // Get the ordered rankings from rankboard_rankings
+                const { data: rankboardRankings, error: rankingsError } = await supabase
+                    .from('rankboard_rankings')
+                    .select('*')
+                    .eq('rankboard_id', rankboardId)
+                    .single();
+                
+                console.log(`Podium view - Rankings data for rankboard ${rankboardId}:`, rankboardRankings);
+                
+                if (rankboardRankings && rankboardRankings.ordered_submission_ids) {
+                    try {
+                        const orderedIds = rankboardRankings.ordered_submission_ids;
+                        
+                        if (!Array.isArray(orderedIds)) {
+                            console.error('ordered_submission_ids is not an array:', orderedIds);
+                            throw new Error('Invalid format for ordered_submission_ids');
+                        }
+                        
+                        if (orderedIds.length === 0) {
+                            trophyDisplay.innerHTML = `<div class="placeholder-text">No submissions available for this leaderboard</div>`;
+                            return;
+                        }
+                        
+                        // Fetch these specific submissions
+                        const { data: orderedSubmissions, error: orderedError } = await supabase
+                            .from('submission')
+                            .select('*, profile:profile_id(*), media:media_id(*)')
+                            .in('id', orderedIds);
+                        
+                        console.log(`Podium view - Fetched submissions:`, orderedSubmissions);
+                        
+                        if (!orderedError && orderedSubmissions) {
+                            // Maintain the exact order from rankboard_rankings
+                            const submissionsInOrder = orderedIds.map(id => {
+                                return orderedSubmissions.find(sub => sub.id === id);
+                            }).filter(sub => sub !== undefined);
+                            
+                            // Store and display the submissions
+                            submissionsData = submissionsInOrder;
+                            updateTrophyDisplay();
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error processing ordered_submission_ids:', error.message);
+                        trophyDisplay.innerHTML = `<div class="placeholder-text">Error loading submissions: ${error.message}</div>`;
+                    }
+                } else {
+                    trophyDisplay.innerHTML = `<div class="placeholder-text">No ranked submissions available</div>`;
+                }
+            } catch (error) {
+                console.error('Error fetching submissions:', error.message);
+                trophyDisplay.innerHTML = `<div class="placeholder-text">Error loading submissions: ${error.message}</div>`;
+            }
+        }
+        
+        // Update trophy display based on current view and position
+        function updateTrophyDisplay() {
+            if (submissionsData.length === 0) {
+                trophyDisplay.innerHTML = `<div class="placeholder-text">No submissions available</div>`;
+                return;
+            }
+            
+            // Set display class based on current view
+            trophyDisplay.className = 'trophy-display';
+            if (currentView === '1') trophyDisplay.classList.add('single-view');
+            else if (currentView === '3') trophyDisplay.classList.add('triple-view');
+            else if (currentView === '5') trophyDisplay.classList.add('five-view');
+            else if (currentView === '10') trophyDisplay.classList.add('ten-view');
+            else trophyDisplay.classList.add('all-view');
+            
+            // Determine which submissions to show
+            let visibleSubmissions = [];
+            const maxVisible = getMaxVisibleCards();
+            
+            if (currentView === '1') {
+                // In single view, show only the submission at the current position
+                if (currentPosition < submissionsData.length) {
+                    visibleSubmissions = [submissionsData[currentPosition]];
+                }
+            } else {
+                // In other views, show submissions from current position up to max visible
+                visibleSubmissions = submissionsData.slice(currentPosition, currentPosition + maxVisible);
+            }
+            
+            // Generate HTML for trophy cards
+            const trophyCardsHtml = visibleSubmissions.map((submission, index) => {
+                // For single view, use the actual current position
+                const position = currentView === '1' ? currentPosition + 1 : index + currentPosition + 1;
+                let submissionImage = '';
+                if (submission.media) {
+                    submissionImage = supabase.storage.from(submission.media.bucket).getPublicUrl(submission.media.file_path).data.publicUrl;
+                }
+                
+                // Trophy emoji based on position
+                let trophyEmoji = '🏆';
+                if (position === 1) trophyEmoji = '🏆';
+                else if (position === 2) trophyEmoji = '🥈';
+                else if (position === 3) trophyEmoji = '🥉';
+                
+                // Ghost name display
+                let usernameDisplay = '';
+                if (submission.profile && submission.profile.ghost_name) {
+                    usernameDisplay = submission.profile.ghost_name;
+                } else {
+                    const ghostId = submission.id.substring(0, 4);
+                    const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
+                    const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
+                    const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
+                    usernameDisplay = ghostName;
+                }
+                
+                return `
+                    <div class="trophy-card place-${position}" onclick="window.location.href='submission-detail.html?id=${submission.id}'">
+                        <div class="trophy-icon">${trophyEmoji}</div>
+                        <img src="${submissionImage || 'https://placehold.co/400x300/gray/white?text=No+Image'}" alt="Fish" class="trophy-image">
+                        <div class="place-badge">#${position}</div>
+                        <h3 class="angler-name"><span class="ghost-name">👻 ${usernameDisplay}</span></h3>
+                        <div class="fish-length">
+                            📏 ${submission.fish_length} inches
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            trophyDisplay.innerHTML = trophyCardsHtml || '<div class="placeholder-text">No submission at this position</div>';
+            
+            // Update navigation buttons
+            updateNavigationButtons();
+        }
+    </script>
+</body>
+</html>

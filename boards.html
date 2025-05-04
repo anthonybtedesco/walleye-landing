@@ -312,7 +312,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 4px;
-            font-size: 0.9em;
+            font-size: 1.05em;
             margin: 0 auto;
         }
         
@@ -324,6 +324,7 @@
             font-weight: bold;
             border-top: 1px solid rgba(0, 112, 192, 0.2);
             border-bottom: 1px solid rgba(0, 112, 192, 0.2);
+            font-size: 1.1em;
         }
         
         .top-rankings-table th:first-child {
@@ -340,6 +341,7 @@
             padding: 8px 6px;
             text-align: center;
             position: relative;
+            font-size: 1.1em;
         }
         
         .top-rankings-table tr {
@@ -404,6 +406,7 @@
             font-weight: bold;
             text-align: center;
             color: var(--primary);
+            font-size: 1.15em;
         }
         
         .main-board-grid {
@@ -762,6 +765,7 @@
             display: inline-flex;
             align-items: center;
             animation: ghost-fade 3s infinite ease-in-out;
+            font-size: 1.05em;
         }
         
         @keyframes ghost-fade {
@@ -925,20 +929,7 @@
                                                 <div class="main-board-img">
                                                     🐟 WalleyeFest 🐟
                                                 </div>
-                                                <div class="leaderboard-details">
-                                                    <div class="leaderboard-detail">
-                                                        <span class="detail-label">Type:</span> ${rankboard.type_ || 'Standard'}
-                                                    </div>
-                                                    <div class="leaderboard-detail">
-                                                        <span class="detail-label">Species:</span> ${rankboard.species || 'All'}
-                                                    </div>
-                                                    <div class="leaderboard-detail">
-                                                        <span class="detail-label">Payout Places:</span> 25
-                                                    </div>
-                                                    <div class="leaderboard-detail">
-                                                        <span class="detail-label">Prizes:</span> Cash 💰
-                                                    </div>
-                                                </div>
+                                                
                                             </div>
                                             <div class="main-board-ranks">
                                                 ${isMobile() ? '<div class="swipe-indicator">Scroll to see more</div>' : ''}
@@ -966,17 +957,7 @@
                                         </div>
                                     </div>
                                     <div class="leaderboard-body">
-                                        <div class="leaderboard-details">
-                                            <div class="leaderboard-detail">
-                                                <span class="detail-label">Type:</span> ${rankboard.type_ || 'Standard'}
-                                            </div>
-                                            <div class="leaderboard-detail">
-                                                <span class="detail-label">Radius:</span> ${rankboard.radius} mi
-                                            </div>
-                                            <div class="leaderboard-detail">
-                                                <span class="detail-label">Payout Places:</span> 3
-                                            </div>
-                                        </div>
+
                                         <div id="top-rankings-${rankboard.id}" class="top-rankings">
                                             <h4>Top 5 Anglers</h4>
                                             <div class="loading-rankings">Loading rankings...</div>
