@@ -25,7 +25,7 @@
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, rgba(0, 112, 192, 0.8), rgba(93, 63, 211, 0.8));
+            background: linear-gradient(135deg, rgba(0, 30, 60, 0.95), rgba(40, 20, 80, 0.95));
             color: #333;
             min-height: 100vh;
             overflow-y: auto;
@@ -156,19 +156,34 @@
         
         .trophy-card:hover {
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        /* Special styling for main board (top 25) */
+        .is-main .trophy-card {
+            border-left: 6px solid rgba(0, 180, 0, 0.7);
+        }
+        
+        /* Special styling for optional boards (top 3) */
+        .is-optional .trophy-card.place-1,
+        .is-optional .trophy-card.place-2,
+        .is-optional .trophy-card.place-3 {
+            border-left: 6px solid rgba(0, 180, 0, 0.7);
         }
         
         .trophy-card.place-1 {
-            border-bottom: 6px solid gold;
+            border-bottom: 6px solid rgba(255, 215, 0, 0.7);
+            background: linear-gradient(to bottom, rgba(20, 20, 20, 0.4), rgba(40, 40, 40, 0.3));
         }
         
         .trophy-card.place-2 {
-            border-bottom: 6px solid silver;
+            border-bottom: 6px solid rgba(192, 192, 192, 0.7);
+            background: linear-gradient(to bottom, rgba(20, 20, 20, 0.35), rgba(40, 40, 40, 0.25));
         }
         
         .trophy-card.place-3 {
-            border-bottom: 6px solid #cd7f32;
+            border-bottom: 6px solid rgba(205, 127, 50, 0.7);
+            background: linear-gradient(to bottom, rgba(20, 20, 20, 0.3), rgba(40, 40, 40, 0.2));
         }
         
         .single-view .trophy-card {
@@ -180,19 +195,20 @@
             font-size: 2.2em;
             font-weight: 700;
             margin: 15px 0;
-            color: #444;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 1px;
         }
         
         .trophy-card.place-1 .place-badge {
-            color: #FFC107;
+            color: rgba(255, 215, 0, 0.9);
         }
         
         .trophy-card.place-2 .place-badge {
-            color: #9E9E9E;
+            color: rgba(192, 192, 192, 0.9);
         }
         
         .trophy-card.place-3 .place-badge {
-            color: #CD7F32;
+            color: rgba(205, 127, 50, 0.9);
         }
         
         .trophy-image {
@@ -202,50 +218,68 @@
             display: block;
             border-radius: 8px;
             margin: 15px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .trophy-icon {
-            font-size: 4rem;
+            font-size: 3.5rem;
             margin: 5px 0 15px;
+            opacity: 0.85;
         }
         
         .trophy-card.place-1 .trophy-icon {
-            color: #FFC107;
-            text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+            color: rgba(255, 215, 0, 0.9);
         }
         
         .trophy-card.place-2 .trophy-icon {
-            color: #9E9E9E;
+            color: rgba(192, 192, 192, 0.9);
         }
         
         .trophy-card.place-3 .trophy-icon {
-            color: #CD7F32;
+            color: rgba(205, 127, 50, 0.9);
         }
         
         .angler-name {
-            font-size: 1.3em;
+            font-size: 1.8em;
             font-weight: 600;
-            color: #333;
-            margin: 10px 0;
+            color: white;
+            margin: 15px 0 10px;
+            letter-spacing: 0.5px;
         }
         
         .user-name {
             font-style: normal;
-            color: #333;
-            background: rgba(0, 112, 192, 0.1);
-            padding: 4px 10px;
-            border-radius: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 16px;
+            border-radius: 4px;
             display: inline-flex;
             align-items: center;
             font-weight: 500;
+            letter-spacing: 0.5px;
         }
         
         .fish-length {
-            font-size: 1.4em;
+            font-size: 2em;
             font-weight: 600;
-            color: #D32F2F;
-            margin-top: 5px;
+            color: white;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px 20px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+        
+        .trophy-card.place-1 .fish-length {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .trophy-card.place-2 .fish-length {
+            background: rgba(0, 0, 0, 0.35);
+        }
+        
+        .trophy-card.place-3 .fish-length {
+            background: rgba(0, 0, 0, 0.3);
         }
         
         .navigation-overlay {
@@ -494,6 +528,7 @@
         let submissionsData = []
         let currentView = '1' // Start with single view
         let currentPosition = 0
+        let isMainBoard = false
         
         // DOM elements
         const trophyDisplay = document.getElementById('trophy-display')
@@ -622,9 +657,19 @@
                 rankboardData = data
                 console.log('Rankboard data:', data)
                 
+                // Check if this is a main board
+                isMainBoard = data.is_main || false
+                
                 // Update the page title and header
                 document.title = `WalleyeFest - ${data.metadata?.name || 'Podium'}`
                 leaderboardTitle.textContent = data.metadata?.name || 'Leaderboard Podium'
+                
+                // Apply class to trophy display based on board type
+                if (isMainBoard) {
+                    trophyDisplay.classList.add('is-main');
+                } else {
+                    trophyDisplay.classList.add('is-optional');
+                }
                 
                 // Set the back button link
                 backBtn.href = `leaderboard-detail.html?id=${leaderboardId}`
@@ -752,10 +797,10 @@
                     <div class="trophy-card place-${position}" onclick="window.location.href='submission-detail.html?id=${submission.id}'">
                         <div class="trophy-icon">${trophyEmoji}</div>
                         <img src="${submissionImage || 'https://placehold.co/400x300/gray/white?text=No+Image'}" alt="Fish" class="trophy-image">
-                        <div class="place-badge">#${position}</div>
-                        <h3 class="angler-name"><span class="user-name">🎣 ${usernameDisplay}</span></h3>
+                        <div class="place-badge">${position}</div>
+                        <h3 class="angler-name"><span class="user-name">${usernameDisplay}</span></h3>
                         <div class="fish-length">
-                            📏 ${submission.fish_length} inches
+                            ${submission.fish_length}"
                         </div>
                     </div>
                 `;
