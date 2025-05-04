@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WalleyeFest Loading</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --wf-primary: #004d40;
+            --wf-secondary: #00796b;
+            --wf-tertiary: #b2dfdb;
+            --wf-accent: #f57c00;
+            --wf-background: #ffffff;
+            --wf-text: #212121;
+            --wf-text-light: #757575;
+            --wf-border: #bdbdbd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--wf-background);
+        }
+        
+        .loading-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .loading-container.loaded {
+            opacity: 1;
+        }
+        
+        .column {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .column-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            animation: scroll-down 300s linear infinite;
+        }
+        
+        @keyframes scroll-down {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(calc(-100% + 100vh));
+            }
+        }
+        
+        .item {
+            width: 100%;
+            height: auto;
+            margin: 10px 0;
+            padding: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .item img, .item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        .logo-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 0.7s ease-in-out;
+            pointer-events: none;
+        }
+        
+        .logo-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 80%;
+        }
+        
+        .logo-image {
+            max-width: 100%;
+            max-height: 40vh;
+            object-fit: contain;
+        }
+        
+        .loading-dots {
+            margin-top: 10px;
+            font-size: 32px;
+            color: var(--wf-accent);
+            letter-spacing: 8px;
+            font-weight: bold;
+        }
+        
+        .dot {
+            display: inline-block;
+            animation: dot-pulse 1.4s infinite;
+            animation-fill-mode: both;
+        }
+        
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes dot-pulse {
+            0%, 80%, 100% {
+                opacity: 0;
+            }
+            40% {
+                opacity: 1;
+            }
+        }
+        
+        .corner-image {
+            position: absolute;
+            max-width: 40%;
+            max-height: 30%;
+            object-fit: contain;
+        }
+        .top-right {
+            top: 20px;
+            right: 20px;
+        }
+        
+        .bottom-right {
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        /* Leaderboard/Board Styling */
+        .board-item {
+            width: 100%;
+            min-height: 300px;
+            margin-bottom: 4px;
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            padding: 15px;
+            position: relative;
+            color: var(--wf-text);
+        }
+        
+        .main-payout {
+            border-left: 4px solid #f57c00;
+        }
+        
+        .non-main-payout {
+            border-left: 4px solid #00796b;
+        }
+        
+        .payout-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--wf-accent);
+            color: white;
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .leaderboard-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--wf-border);
+        }
+        
+        .leaderboard-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--wf-primary);
+        }
+        
+        .leaderboard-species {
+            font-size: 0.9rem;
+            color: var(--wf-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .fish-icon {
+            margin-right: 5px;
+        }
+        
+        .leaderboard-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .leaderboard-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: var(--wf-text-light);
+        }
+        
+        .top-rankings {
+            margin-top: 10px;
+        }
+        
+        .top-rankings h4 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--wf-secondary);
+        }
+        
+        .top-rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        
+        .top-rankings-table th {
+            background-color: var(--wf-tertiary);
+            color: var(--wf-text);
+            text-align: left;
+            padding: 5px;
+        }
+        
+        .top-rankings-table td {
+            padding: 5px;
+            border-bottom: 1px solid var(--wf-border);
+        }
+        
+        .rank-length {
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .medal-icon {
+            display: inline-block;
+            margin-right: 3px;
+        }
+        
+        .ghost-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .rank-1 {
+            background-color: rgba(255, 215, 0, 0.15);
+        }
+        
+        .rank-2 {
+            background-color: rgba(192, 192, 192, 0.15);
+        }
+        
+        .rank-3 {
+            background-color: rgba(205, 127, 50, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-container" class="loading-container">
+        <div class="column">
+            <div id="column1" class="column-inner"></div>
+        </div>
+        <div class="column">
+            <div id="column2" class="column-inner"></div>
+        </div>
+        <div class="column">
+            <div id="column3" class="column-inner"></div>
+        </div>
+    </div>
+    
+    <div id="logo-overlay" class="logo-overlay"></div>
+    
+    <script src="loading.js"></script>
+</body>
+</html>
