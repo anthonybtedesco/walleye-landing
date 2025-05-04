@@ -756,15 +756,14 @@
             }
         }
         
-        .ghost-name {
-            font-style: italic;
-            color: var(--wf-gray);
-            background: rgba(0,0,0,0.05);
+        .user-name {
+            font-style: normal;
+            color: var(--primary);
+            background: rgba(0, 112, 192, 0.1);
             padding: 2px 6px;
             border-radius: 12px;
             display: inline-flex;
             align-items: center;
-            animation: ghost-fade 3s infinite ease-in-out;
             font-size: 1.05em;
         }
         
@@ -1144,18 +1143,12 @@
                     else if (index === 1) medalIcon = '<span class="medal-icon">🥈</span> ';
                     else if (index === 2) medalIcon = '<span class="medal-icon">🥉</span> ';
                     
-                    // Use ghost_name from profile if available, otherwise use ANONYMOUS or generate ghost name
+                    // Use username from profile if available, otherwise generate a generic angler name
                     let usernameDisplay = '';
-                    if (submission.profile && submission.profile.ghost_name) {
-                        usernameDisplay = `<span class="ghost-name">👻 ${submission.profile.ghost_name}</span>`;
+                    if (submission.profile && submission.profile.username) {
+                        usernameDisplay = `<span class="user-name">🎣 ${submission.profile.username}</span>`;
                     } else {
-                        // Generate a random ghost name based on submission id to keep it consistent
-                        const ghostId = submission.id.substring(0, 4);
-                        const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
-                        const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
-                        const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
-                        
-                        usernameDisplay = `<span class="ghost-name">👻 ${ghostName}</span>`;
+                        usernameDisplay = `<span class="user-name">🎣 Angler${submission.id.substring(0, 4)}</span>`;
                     }
                     
                     // Add special class for top 3 ranks

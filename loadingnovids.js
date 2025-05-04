@@ -379,11 +379,12 @@ function populateColumn(column, dataArray) {
                     
                     // Generate username display
                     let usernameDisplay = '';
-                    if (submission.profile && submission.profile.ghost_name) {
-                        usernameDisplay = `<span class="ghost-name">👻 ${submission.profile.ghost_name}</span>`;
+                    if (submission.profile && submission.profile.username) {
+                        usernameDisplay = `<span class="user-name">🎣 ${submission.profile.username}</span>`;
                     } else {
-                        const ghostName = generateGhostName(submission.id);
-                        usernameDisplay = `<span class="ghost-name">👻 ${ghostName}</span>`;
+                        // Use a generic angler name
+                        const anglerId = submission.id.substring(0, 4);
+                        usernameDisplay = `<span class="user-name">🎣 Angler${anglerId}</span>`;
                     }
                     
                     // Add special class for top 3 ranks

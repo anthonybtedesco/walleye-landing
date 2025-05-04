@@ -230,10 +230,10 @@
             margin: 10px 0;
         }
         
-        .ghost-name {
+        .user-name {
             font-style: normal;
-            color: #555;
-            background: rgba(0, 0, 0, 0.03);
+            color: #333;
+            background: rgba(0, 112, 192, 0.1);
             padding: 4px 10px;
             border-radius: 20px;
             display: inline-flex;
@@ -742,14 +742,10 @@
                 
                 // Ghost name display
                 let usernameDisplay = '';
-                if (submission.profile && submission.profile.ghost_name) {
-                    usernameDisplay = submission.profile.ghost_name;
+                if (submission.profile && submission.profile.username) {
+                    usernameDisplay = submission.profile.username;
                 } else {
-                    const ghostId = submission.id.substring(0, 4);
-                    const ghostNames = ['Specter', 'Phantom', 'Shadow', 'Spirit', 'Ghost', 'Wraith', 'Mist', 'Blur', 'Fog', 'Enigma'];
-                    const ghostIndex = Math.abs(ghostId.split('').reduce((a, b) => a + b.charCodeAt(0), 0) % ghostNames.length);
-                    const ghostName = `${ghostNames[ghostIndex]}${ghostId}`;
-                    usernameDisplay = ghostName;
+                    usernameDisplay = 'Angler' + submission.id.substring(0, 4);
                 }
                 
                 return `
@@ -757,7 +753,7 @@
                         <div class="trophy-icon">${trophyEmoji}</div>
                         <img src="${submissionImage || 'https://placehold.co/400x300/gray/white?text=No+Image'}" alt="Fish" class="trophy-image">
                         <div class="place-badge">#${position}</div>
-                        <h3 class="angler-name"><span class="ghost-name">👻 ${usernameDisplay}</span></h3>
+                        <h3 class="angler-name"><span class="user-name">🎣 ${usernameDisplay}</span></h3>
                         <div class="fish-length">
                             📏 ${submission.fish_length} inches
                         </div>
