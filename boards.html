@@ -658,24 +658,7 @@
             
             /* Add swipe indicator for horizontal scrolling */
             .swipe-indicator {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: var(--primary);
-                font-size: 0.8em;
-                margin: 10px 0;
-                opacity: 0.8;
-            }
-            
-            .swipe-indicator::before,
-            .swipe-indicator::after {
-                content: '«';
-                margin: 0 5px;
-                animation: pulse-horizontal 1.5s infinite;
-            }
-            
-            .swipe-indicator::after {
-                content: '»';
+                display: none;
             }
             
             @keyframes pulse-horizontal {
@@ -799,24 +782,9 @@
                 return window.innerWidth <= 768;
             }
             
-            // Add swipe indicators for mobile
-            function addSwipeIndicators() {
-                if (isMobile()) {
-                    const rankContainers = document.querySelectorAll('.main-board-ranks');
-                    rankContainers.forEach(container => {
-                        if (!container.querySelector('.swipe-indicator')) {
-                            const indicator = document.createElement('div');
-                            indicator.className = 'swipe-indicator';
-                            indicator.textContent = 'Scroll to see more';
-                            container.prepend(indicator);
-                        }
-                    });
-                }
-            }
-            
             // Adjust layout on window resize
             window.addEventListener('resize', function() {
-                addSwipeIndicators();
+                // Nothing needed here after removing swipe indicators
             });
             
             // Display the rankboards
@@ -925,13 +893,10 @@
                                     <div class="leaderboard-body">
                                         <div class="main-board-grid">
                                             <div class="main-board-info">
-                                                <div class="main-board-img">
-                                                    🐟 WalleyeFest 🐟
-                                                </div>
-                                                
+  
                                             </div>
                                             <div class="main-board-ranks">
-                                                ${isMobile() ? '<div class="swipe-indicator">Scroll to see more</div>' : ''}
+                                                ${isMobile() ? '' : ''}
                                                 <div id="top-rankings-${rankboard.id}" class="top-rankings">
                                                     <h4>Top Anglers</h4>
                                                     <div class="loading-rankings">Loading rankings...</div>
@@ -988,9 +953,6 @@
                             </div>
                         `;
                     }
-                    
-                    // Add swipe indicators after content is loaded
-                    addSwipeIndicators();
                     
                 } catch (error) {
                     console.error('Error loading rankboards:', error);
