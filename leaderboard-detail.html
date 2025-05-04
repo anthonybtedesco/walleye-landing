@@ -967,11 +967,24 @@
         // Fetch submissions for the leaderboard
         async function fetchLeaderboardSubmissions(rankboardId) {
             try {
+                // First get the rankboard data to access the species
+                if (!rankboardData) {
+                    const { data, error } = await supabase
+                        .from('rankboard')
+                        .select('*')
+                        .eq('id', rankboardId)
+                        .single();
+                    
+                    if (error) throw error;
+                    rankboardData = data;
+                }
+                
                 // Get rankboard submissions which link rankboard to submissions
                 const { data: rankboardSubmissions, error: rankboardError } = await supabase
                     .from('rankboard_submission')
                     .select('*, submission:submission_id(*)')
                     .eq('rankboard_id', rankboardId)
+                    .eq('verified', 'APPROVED')
                 
                 if (rankboardError) throw rankboardError
                 
@@ -1002,10 +1015,15 @@
                 rankboardSubmissions.forEach(rs => {
                     const submission = submissions.find(s => s.id === rs.submission_id)
                     if (submission) {
-                        combinedData.push({
-                            ...submission,
-                            rankboard_submission: rs
-                        })
+                        // Check if the submission's fish_type matches the rankboard's species
+                        // If rankboard species is not specified or "All", include all species
+                        const rankboardSpecies = rankboardData.species;
+                        if (!rankboardSpecies || rankboardSpecies === 'All' || submission.fish_type === rankboardSpecies) {
+                            combinedData.push({
+                                ...submission,
+                                rankboard_submission: rs
+                            })
+                        }
                     }
                 })
                 

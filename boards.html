@@ -1025,11 +1025,23 @@
             // Fetch top submissions for a rankboard
             async function fetchTopSubmissions(rankboardId, limit) {
                 try {
+                    // First get the rankboard to check the species
+                    const { data: rankboardData, error: rankboardDataError } = await supabase
+                        .from('rankboard')
+                        .select('*')
+                        .eq('id', rankboardId)
+                        .single();
+                    
+                    if (rankboardDataError) throw rankboardDataError;
+                    
+                    const rankboardSpecies = rankboardData.species;
+                    
                     // Get rankboard submissions which link rankboard to submissions
                     const { data: rankboardSubmissions, error: rankboardError } = await supabase
                         .from('rankboard_submission')
                         .select('*, submission:submission_id(*)')
                         .eq('rankboard_id', rankboardId)
+                        .eq('verified', 'APPROVED')
                     
                     if (rankboardError) throw rankboardError;
                     
@@ -1056,10 +1068,14 @@
                     rankboardSubmissions.forEach(rs => {
                         const submission = submissions.find(s => s.id === rs.submission_id);
                         if (submission) {
-                            combinedData.push({
-                                ...submission,
-                                rankboard_submission: rs
-                            });
+                            // Check if the submission's fish_type matches the rankboard's species
+                            // If rankboard species is not specified, include all species
+                            if (!rankboardSpecies || rankboardSpecies === 'All' || submission.fish_type === rankboardSpecies) {
+                                combinedData.push({
+                                    ...submission,
+                                    rankboard_submission: rs
+                                });
+                            }
                         }
                     });
                     
