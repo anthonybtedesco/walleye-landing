@@ -964,10 +964,10 @@
             }
         }
         
-        // Fetch submissions for the leaderboard
+        // Fetch submissions for the leaderboard using rankboard_rankings
         async function fetchLeaderboardSubmissions(rankboardId) {
             try {
-                // First get the rankboard data to access the species
+                // First get the rankboard data for metadata
                 if (!rankboardData) {
                     const { data, error } = await supabase
                         .from('rankboard')
@@ -979,82 +979,125 @@
                     rankboardData = data;
                 }
                 
-                // Get rankboard submissions which link rankboard to submissions
-                const { data: rankboardSubmissions, error: rankboardError } = await supabase
-                    .from('rankboard_submission')
-                    .select('*, submission:submission_id(*)')
+                // Get the ordered rankings from rankboard_rankings
+                const { data: rankboardRankings, error: rankingsError } = await supabase
+                    .from('rankboard_rankings')
+                    .select('*')
                     .eq('rankboard_id', rankboardId)
-                    .eq('verified', 'APPROVED')
+                    .single();
                 
-                if (rankboardError) throw rankboardError
+                console.log(`Leaderboard detail - Rankings data for rankboard ${rankboardId}:`, rankboardRankings);
+                console.log(`Leaderboard detail - Rankings error:`, rankingsError);
                 
-                if (!rankboardSubmissions || rankboardSubmissions.length === 0) {
-                    document.getElementById('rankings-container').innerHTML = `
-                        <div class="no-submissions">
-                            <p>No submissions have been made to this leaderboard yet.</p>
-                        </div>
-                    `
-                    return
-                }
-                
-                // Extract submission IDs
-                const submissionIds = rankboardSubmissions.map(rs => rs.submission_id)
-                
-                // Fetch the actual submissions with profile and media data
-                const { data: submissions, error: submissionsError } = await supabase
-                    .from('submission')
-                    .select('*, profile:profile_id(*), media:media_id(*)')
-                    .in('id', submissionIds)
-                
-                if (submissionsError) throw submissionsError
-                
-                console.log('Submissions:', submissions)
-                
-                // Combine with rankboard submission data to preserve ordering
-                const combinedData = []
-                rankboardSubmissions.forEach(rs => {
-                    const submission = submissions.find(s => s.id === rs.submission_id)
-                    if (submission) {
-                        // Check if the submission's fish_type matches the rankboard's species
-                        // If rankboard species is not specified or "All", include all species
-                        const rankboardSpecies = rankboardData.species;
-                        if (!rankboardSpecies || rankboardSpecies === 'All' || submission.fish_type === rankboardSpecies) {
-                            combinedData.push({
-                                ...submission,
-                                rankboard_submission: rs
-                            })
+                if (rankboardRankings && rankboardRankings.ordered_submission_ids) {
+                    try {
+                        // Use the array directly - no need to parse JSON
+                        console.log(`Leaderboard detail - ordered_submission_ids:`, rankboardRankings.ordered_submission_ids);
+                        const orderedIds = rankboardRankings.ordered_submission_ids;
+                        console.log(`Leaderboard detail - orderedIds:`, orderedIds);
+                        
+                        if (!Array.isArray(orderedIds)) {
+                            console.error('ordered_submission_ids is not an array:', orderedIds);
+                            throw new Error('Invalid format for ordered_submission_ids');
+                        }
+                        
+                        if (orderedIds.length === 0) {
+                            const rankingsContainer = document.getElementById('rankings-container');
+                            if (rankingsContainer) {
+                                rankingsContainer.innerHTML = `
+                                    <div class="no-submissions">
+                                        <p>No ranked submissions available for this leaderboard.</p>
+                                    </div>
+                                `;
+                            } else {
+                                console.error('Element rankings-container not found');
+                            }
+                            return;
+                        }
+                        
+                        // Fetch these specific submissions
+                        const { data: orderedSubmissions, error: orderedError } = await supabase
+                            .from('submission')
+                            .select('*, profile:profile_id(*), media:media_id(*)')
+                            .in('id', orderedIds);
+                        
+                        console.log(`Leaderboard detail - Fetched submissions:`, orderedSubmissions);
+                        console.log(`Leaderboard detail - Submission error:`, orderedError);
+                        
+                        if (!orderedError && orderedSubmissions) {
+                            // Maintain the exact order from rankboard_rankings
+                            const submissionsInOrder = orderedIds.map(id => {
+                                return orderedSubmissions.find(sub => sub.id === id);
+                            }).filter(sub => sub !== undefined);
+                            
+                            console.log(`Leaderboard detail - Final ordered submissions:`, submissionsInOrder);
+                            
+                            if (submissionsInOrder.length === 0) {
+                                console.log(`Leaderboard detail - No matching submissions found after filtering`);
+                            }
+                            
+                            // Store and display the rankings
+                            submissionsData = submissionsInOrder;
+                            displaySubmissions(submissionsInOrder);
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error processing ordered_submission_ids:', error.message);
+                        const rankingsContainer = document.getElementById('rankings-container');
+                        if (rankingsContainer) {
+                            rankingsContainer.innerHTML = `
+                                <div class="no-submissions">
+                                    <p>Error parsing ordered_submission_ids. Please try again later.</p>
+                                </div>
+                            `;
+                        } else {
+                            console.error('Element rankings-container not found');
                         }
                     }
-                })
-                
-                submissionsData = combinedData
-                displaySubmissions(combinedData)
+                } else {
+                    // If we reach here, either there are no rankings or we failed to fetch them
+                    const rankingsContainer = document.getElementById('rankings-container');
+                    if (rankingsContainer) {
+                        rankingsContainer.innerHTML = `
+                            <div class="no-submissions">
+                                <p>No ranked submissions available for this leaderboard.</p>
+                            </div>
+                        `;
+                    } else {
+                        console.error('Element rankings-container not found');
+                    }
+                }
             } catch (error) {
-                console.error('Error fetching submissions:', error.message)
-                document.getElementById('rankings-container').innerHTML = `
-                    <div class="no-submissions">
-                        <p>Error loading submissions. Please try again later.</p>
-                    </div>
-                `
+                console.error('Error fetching submissions:', error.message);
+                const rankingsContainer = document.getElementById('rankings-container');
+                if (rankingsContainer) {
+                    rankingsContainer.innerHTML = `
+                        <div class="no-submissions">
+                            <p>Error loading submissions. Please try again later.</p>
+                        </div>
+                    `;
+                } else {
+                    console.error('Element rankings-container not found');
+                }
             }
         }
         
-        // Display submissions sorted by fish length
+        // Display submissions in the order they come from rankboard_rankings
         function displaySubmissions(submissions) {
-            let sortedSubmissions = [...submissions]
+            const rankingsContainer = document.getElementById('rankings-container');
             
-            // Sort by fish length, largest first
-            sortedSubmissions.sort((a, b) => b.fish_length - a.fish_length)
+            if (!rankingsContainer) {
+                console.error('Element rankings-container not found');
+                return;
+            }
             
-            const rankingsContainer = document.getElementById('rankings-container')
-            
-            if (sortedSubmissions.length === 0) {
+            if (submissions.length === 0) {
                 rankingsContainer.innerHTML = `
                     <div class="no-submissions">
                         <p>No submissions available for this leaderboard.</p>
                     </div>
-                `
-                return
+                `;
+                return;
             }
             
             const tableHtml = `
@@ -1071,7 +1114,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${sortedSubmissions.map((submission, index) => {
+                        ${submissions.map((submission, index) => {
                             let submissionImage = ''
                             if (submission.media) {
                                 submissionImage = supabase.storage.from(submission.media.bucket).getPublicUrl(submission.media.file_path).data.publicUrl

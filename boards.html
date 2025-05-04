@@ -1022,81 +1022,121 @@
                 }
             }
             
-            // Fetch top submissions for a rankboard
+            // Fetch top submissions for a rankboard using rankboard_rankings
             async function fetchTopSubmissions(rankboardId, limit) {
                 try {
-                    // First get the rankboard to check the species
-                    const { data: rankboardData, error: rankboardDataError } = await supabase
-                        .from('rankboard')
+                    // Get the ordered rankings from rankboard_rankings
+                    const { data: rankboardRankings, error: rankingsError } = await supabase
+                        .from('rankboard_rankings')
                         .select('*')
-                        .eq('id', rankboardId)
+                        .eq('rankboard_id', rankboardId)
                         .single();
                     
-                    if (rankboardDataError) throw rankboardDataError;
+                    console.log(`Rankboard ${rankboardId} - Rankings data:`, rankboardRankings);
                     
-                    const rankboardSpecies = rankboardData.species;
-                    
-                    // Get rankboard submissions which link rankboard to submissions
-                    const { data: rankboardSubmissions, error: rankboardError } = await supabase
-                        .from('rankboard_submission')
-                        .select('*, submission:submission_id(*)')
-                        .eq('rankboard_id', rankboardId)
-                        .eq('verified', 'APPROVED')
-                    
-                    if (rankboardError) throw rankboardError;
-                    
-                    if (!rankboardSubmissions || rankboardSubmissions.length === 0) {
-                        document.getElementById(`top-rankings-${rankboardId}`).innerHTML = `
-                            <p>No submissions yet</p>
-                        `;
-                        return;
+                    if (rankingsError) {
+                        console.error('Error fetching rankboard rankings:', rankingsError);
+                        throw rankingsError;
                     }
                     
-                    // Extract submission IDs
-                    const submissionIds = rankboardSubmissions.map(rs => rs.submission_id);
-                    
-                    // Fetch the actual submissions with profile data
-                    const { data: submissions, error: submissionsError } = await supabase
-                        .from('submission')
-                        .select('*, profile:profile_id(*)')
-                        .in('id', submissionIds)
-                    
-                    if (submissionsError) throw submissionsError;
-                    
-                    // Combine with rankboard submission data
-                    const combinedData = [];
-                    rankboardSubmissions.forEach(rs => {
-                        const submission = submissions.find(s => s.id === rs.submission_id);
-                        if (submission) {
-                            // Check if the submission's fish_type matches the rankboard's species
-                            // If rankboard species is not specified, include all species
-                            if (!rankboardSpecies || rankboardSpecies === 'All' || submission.fish_type === rankboardSpecies) {
-                                combinedData.push({
-                                    ...submission,
-                                    rankboard_submission: rs
-                                });
+                    if (rankboardRankings && rankboardRankings.ordered_submission_ids) {
+                        try {
+                            // Use the array directly - no need to parse JSON
+                            console.log(`Rankboard ${rankboardId} - ordered_submission_ids:`, rankboardRankings.ordered_submission_ids);
+                            const orderedIds = rankboardRankings.ordered_submission_ids;
+                            console.log(`Rankboard ${rankboardId} - orderedIds:`, orderedIds);
+                            
+                            if (!Array.isArray(orderedIds)) {
+                                console.error('ordered_submission_ids is not an array:', orderedIds);
+                                throw new Error('Invalid format for ordered_submission_ids');
+                            }
+                            
+                            const slicedIds = orderedIds.slice(0, limit);
+                            console.log(`Rankboard ${rankboardId} - Sliced IDs (${limit}):`, slicedIds);
+                            
+                            if (slicedIds.length === 0) {
+                                const rankingsElement = document.getElementById(`top-rankings-${rankboardId}`);
+                                if (rankingsElement) {
+                                    rankingsElement.innerHTML = `
+                                        <p>No ranked submissions yet</p>
+                                    `;
+                                } else {
+                                    console.error(`Element top-rankings-${rankboardId} not found`);
+                                }
+                                return;
+                            }
+                            
+                            // Fetch these specific submissions
+                            const { data: orderedSubmissions, error: orderedError } = await supabase
+                                .from('submission')
+                                .select('*, profile:profile_id(*)')
+                                .in('id', slicedIds);
+                                
+                            console.log(`Rankboard ${rankboardId} - Fetched submissions:`, orderedSubmissions);
+                            
+                            if (orderedError) {
+                                console.error('Error fetching submissions:', orderedError);
+                                throw orderedError;
+                            }
+                            
+                            if (orderedSubmissions && orderedSubmissions.length > 0) {
+                                // Maintain the exact order from rankboard_rankings
+                                const submissionsInOrder = slicedIds.map(id => {
+                                    return orderedSubmissions.find(sub => sub.id === id);
+                                }).filter(sub => sub !== undefined);
+                                
+                                console.log(`Rankboard ${rankboardId} - Final ordered submissions:`, submissionsInOrder);
+                                
+                                // Display the rankings
+                                displayTopRankings(rankboardId, submissionsInOrder, limit);
+                                return;
+                            } else {
+                                console.log(`Rankboard ${rankboardId} - No submissions found for the IDs:`, slicedIds);
+                            }
+                        } catch (error) {
+                            console.error('Error processing ordered_submission_ids:', error.message);
+                            const rankingsElement = document.getElementById(`top-rankings-${rankboardId}`);
+                            if (rankingsElement) {
+                                rankingsElement.innerHTML = `
+                                    <p>Error loading rankings</p>
+                                `;
+                            } else {
+                                console.error(`Element top-rankings-${rankboardId} not found`);
                             }
                         }
-                    });
+                    }
                     
-                    // Sort by fish length, largest first
-                    const sortedSubmissions = [...combinedData].sort((a, b) => b.fish_length - a.fish_length);
-                    
-                    // Display top submissions
-                    const topSubmissions = sortedSubmissions.slice(0, limit);
-                    displayTopRankings(rankboardId, topSubmissions, limit);
+                    // If we reach here, either there are no rankings or we failed to fetch them
+                    const rankingsElement = document.getElementById(`top-rankings-${rankboardId}`);
+                    if (rankingsElement) {
+                        rankingsElement.innerHTML = `
+                            <p>No ranked submissions yet</p>
+                        `;
+                    } else {
+                        console.error(`Element top-rankings-${rankboardId} not found`);
+                    }
                     
                 } catch (error) {
                     console.error(`Error fetching submissions for rankboard ${rankboardId}:`, error.message);
-                    document.getElementById(`top-rankings-${rankboardId}`).innerHTML = `
-                        <p>Error loading rankings</p>
-                    `;
+                    const rankingsElement = document.getElementById(`top-rankings-${rankboardId}`);
+                    if (rankingsElement) {
+                        rankingsElement.innerHTML = `
+                            <p>Error loading rankings</p>
+                        `;
+                    } else {
+                        console.error(`Element top-rankings-${rankboardId} not found`);
+                    }
                 }
             }
             
             // Display top rankings in the table
             function displayTopRankings(rankboardId, submissions, limit) {
                 const rankingsContainer = document.getElementById(`top-rankings-${rankboardId}`);
+                
+                if (!rankingsContainer) {
+                    console.error(`Element top-rankings-${rankboardId} not found`);
+                    return;
+                }
                 
                 if (submissions.length === 0) {
                     rankingsContainer.innerHTML = `<p>No submissions yet</p>`;
@@ -1115,6 +1155,7 @@
                         <tbody>
                 `;
                 
+                // Display submissions in their original order from rankboard_rankings
                 submissions.forEach((submission, index) => {
                     // Add medal icons for top 3
                     let medalIcon = '';

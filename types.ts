@@ -227,11 +227,12 @@ export interface RankboardRankings {
   created_at: Timestamptz;
   rankboard_id: UUID;
   orderd_submissions: string;
+  ordered_submission_ids: string[];
 }
 
 export interface RankboardRankingsCreate {
   rankboard_id: UUID;
-  orderd_submissions: string;
+  ordered_submission_ids: string[];
 }
 
 export interface Badge {
