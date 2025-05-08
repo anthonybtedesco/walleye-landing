@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WalleyeFest 2025 - Payouts</title>
+    <style>
+        :root {
+            --wf-blue: #0070c0;
+            --wf-dark-blue: #005694;
+            --wf-accent: #FFD700;
+            --wf-black: #222;
+            --wf-gray: #888;
+            
+            /* Simplified color scheme */
+            --primary: var(--wf-blue);
+            --secondary: var(--wf-dark-blue);
+            --accent: var(--wf-accent);
+            --dark: var(--wf-black);
+            --light: #ffffff;
+            --success: #1ab64f;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            padding: 20px 0;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .header-title {
+            font-size: 2.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: var(--accent);
+        }
+        
+        .event-summary {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--wf-black);
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .stat-box {
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            min-width: 200px;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .payout-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 2px solid var(--wf-black);
+        }
+        
+        .payout-title {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            margin: 0;
+            font-size: 1.3em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .payout-title.main {
+            background: var(--secondary);
+        }
+        
+        .payout-content {
+            padding: 20px;
+        }
+        
+        .payout-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 112, 192, 0.1);
+            border-radius: 8px;
+        }
+        
+        .payout-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 4px;
+            margin-top: 15px;
+        }
+        
+        .payout-table th {
+            background: rgba(0, 112, 192, 0.1);
+            padding: 12px;
+            text-align: left;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .payout-table td {
+            padding: 12px;
+            background: white;
+        }
+        
+        .payout-table tr:hover td {
+            background: rgba(0, 112, 192, 0.05);
+        }
+        
+        .rank-1 td {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+        }
+        
+        .rank-2 td {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+        }
+        
+        .rank-3 td {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+        }
+        
+        .amount {
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .medal-icon {
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header-title {
+                font-size: 1.8em;
+            }
+            
+            .summary-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-box {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .payout-info {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .payout-table {
+                font-size: 0.9em;
+            }
+            
+            .payout-table th,
+            .payout-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="header-title">🏆 WalleyeFest 2025 Payouts 🏆</h1>
+        </div>
+        
+        <div class="event-summary">
+            <h2>Event Summary</h2>
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div class="stat-value">646</div>
+                    <div class="stat-label">Total Entrants</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">988</div>
+                    <div class="stat-label">Total Leaderboards</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">$26,585</div>
+                    <div class="stat-label">Total Cash & Prizes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">114%</div>
+                    <div class="stat-label">Total Payout</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Leaderboard -->
+        <div class="payout-section">
+            <div class="payout-title main">
+                <span>#1 Main Leaderboard</span>
+                <span>581 entries - $23,170 total (160% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Jason Cameron</td>
+                            <td class="amount">$2,000.00</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Jeff Boshart</td>
+                            <td class="amount">$1,697.54</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Dimitri Romanenko</td>
+                            <td class="amount">$1,509.52</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Mike Demm</td>
+                            <td class="amount">$1,342.32</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Travis Young</td>
+                            <td class="amount">$1,193.64</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Jaison McCombie</td>
+                            <td class="amount">$1,061.43</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Anthony Mandell</td>
+                            <td class="amount">$943.86</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Casey McIntosh</td>
+                            <td class="amount">$839.32</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Kate Palmer</td>
+                            <td class="amount">$746.35</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Connor Fox</td>
+                            <td class="amount">$663.68</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Kyle Jones</td>
+                            <td class="amount">$590.17</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Ben Vincent</td>
+                            <td class="amount">$524.80</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Dan Salamone</td>
+                            <td class="amount">$466.67</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>Christopher Compson</td>
+                            <td class="amount">$414.98</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>Willis Wood</td>
+                            <td class="amount">$369.02</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>Brian Finnegan</td>
+                            <td class="amount">$328.15</td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>Lexi Snyder</td>
+                            <td class="amount">$291.80</td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td>Ryan Voorhes</td>
+                            <td class="amount">$259.48</td>
+                        </tr>
+                        <tr>
+                            <td>19</td>
+                            <td>Jason Powers</td>
+                            <td class="amount">$230.74</td>
+                        </tr>
+                        <tr>
+                            <td>20</td>
+                            <td>Andrew Panekk</td>
+                            <td class="amount">$205.18</td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td>Shawn Kreis</td>
+                            <td class="amount">$182.45</td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td>Joe Cangemi</td>
+                            <td class="amount">$162.25</td>
+                        </tr>
+                        <tr>
+                            <td>23</td>
+                            <td>Chad Ryan</td>
+                            <td class="amount">$144.27</td>
+                        </tr>
+                        <tr>
+                            <td>24</td>
+                            <td>Eric Davis</td>
+                            <td class="amount">$128.29</td>
+                        </tr>
+                        <tr>
+                            <td>25</td>
+                            <td>Douglas Hammond</td>
+                            <td class="amount">$114.08</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Sponsor Bingo -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>Sponsor Bingo</span>
+                <span>$6,760 total prizes - 25 sponsors, 63 prizes, 17 winners</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Winner</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Dan Salamone</td>
+                            <td class="amount">$1,600.00</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Anthony Mandell</td>
+                            <td class="amount">$1,405.00</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Don Therre</td>
+                            <td class="amount">$1,185.00</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Don Berti</td>
+                            <td class="amount">$950.00</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Anthony Darby</td>
+                            <td class="amount">$355.00</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Eric Griffith</td>
+                            <td class="amount">$250.00</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Dave Johns</td>
+                            <td class="amount">$150.00</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Shawn Kreis</td>
+                            <td class="amount">$125.00</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Brian Finnegan</td>
+                            <td class="amount">$120.00</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Terry Wicks</td>
+                            <td class="amount">$105.00</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Joe Cangemi</td>
+                            <td class="amount">$100.00</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Steven Connelly</td>
+                            <td class="amount">$100.00</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Andrew White</td>
+                            <td class="amount">$75.00</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>Rich Ras</td>
+                            <td class="amount">$50.00</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>Drew Werlke</td>
+                            <td class="amount">$25.00</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>Christine Graver</td>
+                            <td class="amount">$25.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Women's Adult -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#2 Women's Adult Leaderboard</span>
+                <span>28 entries - $1,045 total (149% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Hope Pragacz</td>
+                            <td class="amount">$600.00</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Deb Pollock</td>
+                            <td class="amount">$300.00</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Lindsay Johnson</td>
+                            <td class="amount">$145.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Men's Adult -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#3 Men's Adult Leaderboard</span>
+                <span>89 entries - $2,250 total (101% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Mike Demm</td>
+                            <td class="amount">$1,696.26</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Travis Young</td>
+                            <td class="amount">$439.74</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Casey McIntosh</td>
+                            <td class="amount">$114.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Military/1st Responder -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#4 Military/1st Responder Leaderboard</span>
+                <span>38 entries - $1,260 total (133% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> James Wheeler</td>
+                            <td class="amount">$882.27</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Theodore Brush</td>
+                            <td class="amount">$272.73</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Rich Ras</td>
+                            <td class="amount">$105.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Best 5 -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#5 Best 5 Leaderboard</span>
+                <span>80 entries - $2,060 total (103% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Mike Demm</td>
+                            <td class="amount">$1,553.02</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Travis Young</td>
+                            <td class="amount">$402.61</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Josh Deacons</td>
+                            <td class="amount">$104.37</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Longest Yellow Perch -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#6 Longest Yellow Perch Leaderboard</span>
+                <span>75 entries - $1,820 total (97% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Jim Mitchell</td>
+                            <td class="amount">$1,372.09</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Bret Vanderpool</td>
+                            <td class="amount">$355.70</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Darcey Simmons</td>
+                            <td class="amount">$92.21</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Youth Walleye -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#7 Youth Walleye Leaderboard</span>
+                <span>65 entries - $1,100 total (170% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Cole Grochowski</td>
+                            <td class="amount">$619.00</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Jacob Longo</td>
+                            <td class="amount">$260.00</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Emily Dyer</td>
+                            <td class="amount">$220.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Youth Yellow Perch -->
+        <div class="payout-section">
+            <div class="payout-title">
+                <span>#8 Youth Yellow Perch Leaderboard</span>
+                <span>32 entries - $640 total (200% payout)</span>
+            </div>
+            <div class="payout-content">
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Angler</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rank-1">
+                            <td>1</td>
+                            <td><span class="medal-icon">🥇</span> Chase Tomaino</td>
+                            <td class="amount">$360.00</td>
+                        </tr>
+                        <tr class="rank-2">
+                            <td>2</td>
+                            <td><span class="medal-icon">🥈</span> Grace Edwards</td>
+                            <td class="amount">$160.00</td>
+                        </tr>
+                        <tr class="rank-3">
+                            <td>3</td>
+                            <td><span class="medal-icon">🥉</span> Braden Finch</td>
+                            <td class="amount">$120.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
