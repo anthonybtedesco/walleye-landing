@@ -183,31 +183,155 @@
             
             .header-title {
                 font-size: 1.8em;
+                padding: 0 10px;
             }
             
             .summary-stats {
                 flex-direction: column;
                 align-items: center;
+                gap: 15px;
             }
             
             .stat-box {
                 width: 100%;
                 max-width: 300px;
+                padding: 12px 15px;
             }
             
-            .payout-info {
+            .stat-value {
+                font-size: 1.3em;
+            }
+            
+            .payout-title {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
                 text-align: center;
+                padding: 12px 10px;
+                font-size: 1.1em;
+            }
+            
+            .payout-title span:last-child {
+                font-size: 0.9em;
+                opacity: 0.9;
+            }
+            
+            .payout-content {
+                padding: 15px 10px;
             }
             
             .payout-table {
                 font-size: 0.9em;
+                margin-top: 10px;
             }
             
             .payout-table th,
             .payout-table td {
-                padding: 8px;
+                padding: 10px 8px;
+            }
+            
+            .medal-icon {
+                font-size: 1.1em;
+            }
+            
+            .amount {
+                font-size: 0.95em;
+            }
+        }
+        
+        /* Small phones */
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 1.5em;
+            }
+            
+            .stat-box {
+                padding: 10px;
+                min-width: auto;
+            }
+            
+            .stat-value {
+                font-size: 1.2em;
+            }
+            
+            .stat-label {
+                font-size: 0.85em;
+            }
+            
+            .payout-title {
+                font-size: 1em;
+                padding: 10px 8px;
+            }
+            
+            .payout-title span:last-child {
+                font-size: 0.85em;
+            }
+            
+            .payout-content {
+                padding: 12px 8px;
+            }
+            
+            .payout-table {
+                font-size: 0.85em;
+            }
+            
+            .payout-table th,
+            .payout-table td {
+                padding: 8px 6px;
+            }
+            
+            .medal-icon {
+                font-size: 1em;
+            }
+            
+            .amount {
+                font-size: 0.9em;
+            }
+            
+            /* Ensure table content doesn't overflow */
+            .payout-table td:nth-child(2) {
+                max-width: 120px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            /* Add horizontal scroll for tables on very small screens */
+            .payout-content {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .payout-table {
+                min-width: 280px;
+            }
+        }
+        
+        /* Add touch-friendly styles */
+        @media (hover: none) {
+            .payout-table tr {
+                cursor: default;
+            }
+            
+            .payout-table tr:hover td {
+                background: inherit;
+            }
+            
+            .rank-1 td,
+            .rank-2 td,
+            .rank-3 td {
+                background: inherit;
+            }
+            
+            .rank-1 td {
+                background: linear-gradient(to right, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            }
+            
+            .rank-2 td {
+                background: linear-gradient(to right, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+            }
+            
+            .rank-3 td {
+                background: linear-gradient(to right, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05));
             }
         }
     </style>
